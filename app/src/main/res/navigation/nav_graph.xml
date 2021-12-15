@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_status">
+
+    <fragment
+        android:id="@id/nav_status"
+        android:name="cc.wecando.harmoniousfamily.frontend.fragment.EnvStatusFragment"
+        android:label="@string/status" />
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="cc.wecando.harmoniousfamily.frontend.fragment.PrefFragment"
+        android:label="@string/settings">
+        <argument
+            android:name="prefRes"
+            app:argType="reference" />
+        <argument
+            android:name="prefName"
+            app:argType="string" />
+    </fragment>
+
+</navigation>
