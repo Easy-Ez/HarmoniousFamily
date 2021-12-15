@@ -1,12 +1,12 @@
-package com.gh0u1l5.wechatmagician.backend.storage
+package cc.wecando.harmoniousfamily.backend.storage
 
 import android.content.*
 import android.net.Uri
-import com.gh0u1l5.wechatmagician.Global.ACTION_UPDATE_PREF
-import com.gh0u1l5.wechatmagician.Global.FOLDER_SHARED_PREFS
-import com.gh0u1l5.wechatmagician.Global.MAGICIAN_BASE_DIR
-import com.gh0u1l5.wechatmagician.Global.PREFERENCE_PROVIDER_AUTHORITY
-import com.gh0u1l5.wechatmagician.Global.PREFERENCE_STRING_LIST_KEYS
+import cc.wecando.harmoniousfamily.Global.ACTION_UPDATE_PREF
+import cc.wecando.harmoniousfamily.Global.FOLDER_SHARED_PREFS
+import cc.wecando.harmoniousfamily.Global.MAGICIAN_BASE_DIR
+import cc.wecando.harmoniousfamily.Global.PREFERENCE_PROVIDER_AUTHORITY
+import cc.wecando.harmoniousfamily.Global.PREFERENCE_STRING_LIST_KEYS
 import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
@@ -35,16 +35,16 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
                 // Load the shared preferences using ContentProvider.
                 val uri = Uri.parse("content://$PREFERENCE_PROVIDER_AUTHORITY/$preferencesName")
                 val cursor = context.contentResolver.query(uri, null, null, null, null)
-                cursor.use {
-                    while (cursor.moveToNext()) {
-                        val key = cursor.getString(0)
-                        val type = cursor.getString(2)
+                cursor?.let {
+                    while (it.moveToNext()) {
+                        val key = it.getString(0)
+                        val type = it.getString(2)
                         content[key] = when (type) {
-                            "Int"     -> cursor.getInt(1)
-                            "Long"    -> cursor.getLong(1)
-                            "Float"   -> cursor.getFloat(1)
-                            "Boolean" -> (cursor.getString(1) == "true")
-                            "String"  -> cursor.getString(1)
+                            "Int" -> it.getInt(1)
+                            "Long" -> it.getLong(1)
+                            "Float" -> it.getFloat(1)
+                            "Boolean" -> (it.getString(1) == "true")
+                            "String" -> it.getString(1)
                             else -> null
                         }
                     }
@@ -77,7 +77,10 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
             // Otherwise we completely follow the new ContentProvider pattern.
             if (intent != null) {
                 val key = intent.getStringExtra("key")
-                content[key] = intent.extras.get("value")
+                key?.let {
+                    content[it] = intent.extras?.get("value")
+                }
+
             }
         }
     }
@@ -90,20 +93,25 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
 
     private fun cacheStringList() {
         PREFERENCE_STRING_LIST_KEYS.forEach { key ->
-            listCache[key] = getString(key, "").split(" ", "|").filter { it.isNotEmpty() }
+            getString(key, "")?.split(" ", "|")?.filter { it.isNotEmpty() }?.let {
+                listCache[key] = it
+            }
+
         }
     }
 
-    override fun contains(key: String): Boolean = content.contains(key) || legacy?.contains(key) == true
+    override fun contains(key: String): Boolean =
+        content.contains(key) || legacy?.contains(key) == true
 
     override fun getAll(): MutableMap<String, *>? = if (legacy != null) legacy!!.all else content
 
-    private fun getValue(key: String): Any? {
+    private fun getValue(key: String?): Any? {
         loadChannel.wait(100)
         return all?.get(key)
     }
 
-    private inline fun <reified T>getValue(key: String, defValue: T) = getValue(key) as? T ?: defValue
+    private inline fun <reified T> getValue(key: String?, defValue: T) =
+        getValue(key) as? T ?: defValue
 
     override fun getInt(key: String, defValue: Int): Int = getValue(key, defValue)
 
@@ -113,9 +121,10 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean = getValue(key, defValue)
 
-    override fun getString(key: String, defValue: String): String = getValue(key, defValue)
+    override fun getString(key: String?, defValue: String?): String? = getValue(key, defValue)
 
-    override fun getStringSet(key: String, defValue: MutableSet<String>): MutableSet<String> = getValue(key, defValue)
+    override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String>? =
+        getValue(key, defValues)
 
     fun getStringList(key: String, defValue: List<String>): List<String> {
         loadChannel.wait(100)

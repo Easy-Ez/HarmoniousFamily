@@ -1,4 +1,4 @@
-package com.gh0u1l5.wechatmagician.util
+package cc.wecando.harmoniousfamily.utils
 
 import android.content.Context
 import android.content.Intent
@@ -23,13 +23,13 @@ object ViewUtil {
     private const val TAG = "ViewUtil"
 
     // dumpViewGroup dumps the structure of a view group.
-    fun dumpViewGroup(prefix: String, viewGroup: ViewGroup) {
-        repeat(viewGroup.childCount, {
-            var attrs = mapOf<String, Any?>()
+    private fun dumpViewGroup(prefix: String, viewGroup: ViewGroup) {
+        repeat(viewGroup.childCount) {
+            val attrs = mutableMapOf<String, Any?>()
             val child = viewGroup.getChildAt(it)
 
-            val getAttr = {getter: String ->
-                if (child::class.java.methods.count{ it.name == getter } != 0) {
+            val getAttr = { getter: String ->
+                if (child::class.java.methods.count { method -> method.name == getter } != 0) {
                     attrs += getter to XposedHelpers.callMethod(child, getter)
                 }
             }
@@ -44,12 +44,12 @@ object ViewUtil {
             if (child is ViewGroup) {
                 dumpViewGroup("$prefix[$it]", child)
             }
-        })
+        }
     }
 
     // searchViewGroup returns the first view that matches a specific class name in the given view group.
-    fun searchViewGroup(viewGroup: ViewGroup, className: String): View? {
-        repeat(viewGroup.childCount, {
+    private fun searchViewGroup(viewGroup: ViewGroup, className: String): View? {
+        repeat(viewGroup.childCount) {
             val child = viewGroup.getChildAt(it)
             if (child::class.java.name == className) {
                 return child
@@ -60,7 +60,7 @@ object ViewUtil {
                     return result
                 }
             }
-        })
+        }
         return null
     }
 

@@ -1,5 +1,6 @@
-package com.gh0u1l5.wechatmagician.backend.storage.list
+package cc.wecando.harmoniousfamily.backend.storage.list
 
-import com.gh0u1l5.wechatmagician.Global.PREFERENCE_NAME_HIDDEN_CHATROOM
+import cc.wecando.harmoniousfamily.Global.PREFERENCE_NAME_HIDDEN_CHATROOM
+import cc.wecando.harmoniousfamily.backend.storage.list.PersistentList
 
 object ChatroomHideList : PersistentList(PREFERENCE_NAME_HIDDEN_CHATROOM)

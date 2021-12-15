@@ -1,4 +1,4 @@
-package com.gh0u1l5.wechatmagician.util
+package cc.wecando.harmoniousfamily.utils
 
 import android.os.Bundle
 import java.math.BigInteger

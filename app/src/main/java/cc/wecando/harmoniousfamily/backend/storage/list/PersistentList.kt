@@ -1,4 +1,4 @@
-package com.gh0u1l5.wechatmagician.backend.storage.list
+package cc.wecando.harmoniousfamily.backend.storage.list
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
@@ -7,7 +7,8 @@ import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 
 open class PersistentList(private val preferenceName: String) : BaseList<String>() {
 
-    @Volatile var preference: SharedPreferences? = null
+    @Volatile
+    var preference: SharedPreferences? = null
 
     fun load(context: Context) {
         tryAsynchronously {

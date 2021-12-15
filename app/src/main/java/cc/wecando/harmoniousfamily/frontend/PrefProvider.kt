@@ -1,4 +1,4 @@
-package com.gh0u1l5.wechatmagician.frontend
+package cc.wecando.harmoniousfamily.frontend
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -7,14 +7,13 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
-import com.gh0u1l5.wechatmagician.Global.PREFERENCE_NAME_DEVELOPER
-import com.gh0u1l5.wechatmagician.Global.PREFERENCE_NAME_SETTINGS
-import com.gh0u1l5.wechatmagician.util.IPCUtil.getProtectedSharedPreferences
+import cc.wecando.harmoniousfamily.Global.PREFERENCE_NAME_DEVELOPER
+import cc.wecando.harmoniousfamily.Global.PREFERENCE_NAME_SETTINGS
 
 // PrefProvider shares the preferences using content provider model.
 class PrefProvider : ContentProvider() {
 
-    private val preferences: MutableMap<String, SharedPreferences> = mutableMapOf()
+    private val preferences: MutableMap<String, SharedPreferences?> = mutableMapOf()
 
     private fun getPreferenceType(value: Any?): String {
         return when (value) {
@@ -30,22 +29,26 @@ class PrefProvider : ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
-        preferences[PREFERENCE_NAME_SETTINGS]  = context.getProtectedSharedPreferences(PREFERENCE_NAME_SETTINGS, MODE_PRIVATE)
-        preferences[PREFERENCE_NAME_DEVELOPER] = context.getProtectedSharedPreferences(PREFERENCE_NAME_DEVELOPER, MODE_PRIVATE)
-
+        preferences[PREFERENCE_NAME_SETTINGS] =
+            context?.getSharedPreferences(PREFERENCE_NAME_SETTINGS, MODE_PRIVATE)
+        preferences[PREFERENCE_NAME_DEVELOPER] =
+            context?.getSharedPreferences(PREFERENCE_NAME_DEVELOPER, MODE_PRIVATE)
         return true
     }
 
-    override fun getType(uri: Uri?): String? = null
-
-    override fun insert(uri: Uri?, values: ContentValues?): Uri {
+    override fun getType(uri: Uri): String? = null
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
         throw UnsupportedOperationException("Wechat Magician PrefProvider: Cannot modify read-only preferences!")
+
     }
 
-    override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-        if (uri == null) {
-            return null
-        }
+    override fun query(
+        uri: Uri,
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+        sortOrder: String?
+    ): Cursor? {
         val segments = uri.pathSegments
         if (segments.size != 1) {
             return null
@@ -59,11 +62,16 @@ class PrefProvider : ContentProvider() {
         }
     }
 
-    override fun update(uri: Uri?, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?
+    ): Int {
         throw UnsupportedOperationException("Wechat Magician PrefProvider: Cannot modify read-only preferences!")
     }
 
-    override fun delete(uri: Uri?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
         throw UnsupportedOperationException("Wechat Magician PrefProvider: Cannot modify read-only preferences!")
     }
 }

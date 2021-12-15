@@ -1,4 +1,4 @@
-package com.gh0u1l5.wechatmagician.backend.storage.list
+package cc.wecando.harmoniousfamily.backend.storage.list
 
 object SnsBlacklist : BaseList<String?>() {
     override operator fun plusAssign(value: String?) {

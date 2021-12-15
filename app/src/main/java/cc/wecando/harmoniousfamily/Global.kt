@@ -14,8 +14,10 @@ object Global {
     const val MAGICIAN_FILE_PROVIDER = "$MAGICIAN_PACKAGE_NAME.files"
 
     @SuppressLint("SdCardPath")
-    private val DATA_DIR =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) "/data/data/" else "/data/user_de/0/"
+    // todo 修改此处 sp 路径判断
+//    private val DATA_DIR =
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) "/data/data/" else "/data/user_de/0/"
+    private val DATA_DIR = "/data/data/"
     val XPOSED_BASE_DIR = "$DATA_DIR/$XPOSED_PACKAGE_NAME/"
     val MAGICIAN_BASE_DIR = "$DATA_DIR/$MAGICIAN_PACKAGE_NAME/"
 
@@ -29,7 +31,7 @@ object Global {
 
     const val FOLDER_SHARED_PREFS = "shared_prefs"
 
-    const val PREFERENCE_PROVIDER_AUTHORITY = "com.gh0u1l5.wechatmagician.preferences"
+    const val PREFERENCE_PROVIDER_AUTHORITY = "cc.wecando.harmoniousfamil.preferences"
     const val PREFERENCE_NAME_SETTINGS = "settings"
     const val PREFERENCE_NAME_DEVELOPER = "developer"
     const val PREFERENCE_NAME_SECRET_FRIEND = "wechat-magician-secret-friend"

@@ -1,20 +1,28 @@
-package com.gh0u1l5.wechatmagician.frontend.widget
+package cc.wecando.harmoniousfamily.frontend.widget
 
 import android.content.Context
-import android.preference.SwitchPreference
 import android.util.AttributeSet
-import com.gh0u1l5.wechatmagician.R
-import com.gh0u1l5.wechatmagician.util.PasswordUtil
+import cc.wecando.harmoniousfamily.R
+import cc.wecando.harmoniousfamily.utils.PasswordUtil
 
-class PasswordSwitchPreference : SwitchPreference {
+class PasswordSwitchPreference : androidx.preference.SwitchPreference {
 
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(
+        context,
+        attrs,
+        defStyleAttr,
+        defStyleRes
+    )
 
     override fun onClick() {
         val pref = preferenceManager.sharedPreferences
@@ -22,7 +30,7 @@ class PasswordSwitchPreference : SwitchPreference {
 
         val status = pref.getBoolean(key, false)
         if (status) { // close
-            if (encrypted.isEmpty()) {
+            if (encrypted.isNullOrEmpty()) {
                 return super.onClick()
             }
             val message = context.getString(R.string.prompt_verify_password)
@@ -30,7 +38,7 @@ class PasswordSwitchPreference : SwitchPreference {
                 super.onClick()
             }
         } else { // open
-            if (encrypted.isNotEmpty()) {
+            if (encrypted.isNullOrEmpty()) {
                 return super.onClick()
             }
             PasswordUtil.createPassword(context, "Wechat Magician", pref, "${key}_password") {

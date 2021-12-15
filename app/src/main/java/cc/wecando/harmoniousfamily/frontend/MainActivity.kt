@@ -1,5 +1,6 @@
 package cc.wecando.harmoniousfamily.frontend
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +13,7 @@ import cc.wecando.harmoniousfamily.R
 import cc.wecando.harmoniousfamily.databinding.ActivityMainBinding
 import cc.wecando.harmoniousfamily.frontend.fragment.EnvStatusFragment
 import cc.wecando.harmoniousfamily.frontend.fragment.PrefFragment
+import cc.wecando.harmoniousfamily.utils.LocaleUtil
 import com.google.android.material.navigation.NavigationView
 
 
@@ -19,6 +21,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private val bind by lazy {
         ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleUtil.onAttach(base))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toggle = object : ActionBarDrawerToggle(
             this,
             bind.drawerLayout,
+            bind.appBarMain.toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         ) {
@@ -38,6 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
+                super.onDrawerSlide(drawerView, 0F)
             }
         }
         bind.drawerLayout.addDrawerListener(toggle)
@@ -46,7 +54,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         bind.navView.setNavigationItemSelectedListener(this)
 
-
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, EnvStatusFragment.newInstance())
+                .commit()
+        }
     }
 
     override fun onBackPressed() {
