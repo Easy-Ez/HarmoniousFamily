@@ -122,18 +122,18 @@ class WechatHook : IXposedHookLoadPackage {
         tryVerbosely {
             when (lpparam.packageName) {
                 MAGICIAN_PACKAGE_NAME ->
-                    hookAttachBaseContext(lpparam.classLoader, { _ ->
+                    hookAttachBaseContext(lpparam.classLoader) { _ ->
                         handleLoadMagician(lpparam.classLoader)
-                    })
+                    }
                 else -> if (isImportantWechatProcess(lpparam)) {
                     log("Wechat Magician: process = ${lpparam.processName}, version = ${BuildConfig.VERSION_NAME}")
-                    hookAttachBaseContext(lpparam.classLoader, { context ->
-                        if (!BuildConfig.DEBUG) {
-                            handleLoadWechat(lpparam, context)
-                        } else {
-                            handleLoadWechatOnFly(lpparam, context)
-                        }
-                    })
+                    hookAttachBaseContext(lpparam.classLoader) { context ->
+//                        if (!BuildConfig.DEBUG) {
+                        handleLoadWechat(lpparam, context)
+//                        } else {
+//                            handleLoadWechatOnFly(lpparam, context)
+//                    }
+                    }
                 }
             }
         }
@@ -142,15 +142,15 @@ class WechatHook : IXposedHookLoadPackage {
     @Suppress("DEPRECATION")
     private fun handleLoadMagician(loader: ClassLoader) {
         findAndHookMethod(
-            "$MAGICIAN_PACKAGE_NAME.frontend.fragments.StatusFragment", loader,
+            "$MAGICIAN_PACKAGE_NAME.frontend.fragments.EnvStatusFragment", loader,
             "isModuleLoaded", object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(param: MethodHookParam): Any = true
             })
         findAndHookMethod(
-            "$MAGICIAN_PACKAGE_NAME.frontend.fragments.StatusFragment", loader,
+            "$MAGICIAN_PACKAGE_NAME.frontend.fragments.EnvStatusFragment", loader,
             "getXposedVersion", object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(param: MethodHookParam): Any =
-                    XposedBridge.XPOSED_BRIDGE_VERSION
+                    XposedBridge.getXposedVersion()
             })
     }
 

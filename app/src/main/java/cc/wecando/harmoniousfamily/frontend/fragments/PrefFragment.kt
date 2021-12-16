@@ -1,4 +1,4 @@
-package cc.wecando.harmoniousfamily.frontend.fragment
+package cc.wecando.harmoniousfamily.frontend.fragments
 
 import android.content.ComponentName
 import android.content.Intent

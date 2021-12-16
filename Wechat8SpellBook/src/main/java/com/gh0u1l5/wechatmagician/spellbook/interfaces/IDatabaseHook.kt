@@ -45,7 +45,7 @@ interface IDatabaseHook {
      * @return to bypass the original method, return [Operation.interruption] or a WCDB Cursor object
      * wrapped by [Operation.replacement], otherwise return [Operation.nop].
      */
-    fun onDatabaseQuerying(thisObject: Any, factory: Any?, sql: String, selectionArgs: Array<String>?, editTable: String?, cancellationSignal: Any?): Operation<Any> = nop()
+    fun onDatabaseQuerying(thisObject: Any, factory: Any?, sql: String, selectionArgs: Array<Any>?, editTable: String?, cancellationSignal: Any?): Operation<Any> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.rawQueryWithFactory] method.
@@ -60,7 +60,7 @@ interface IDatabaseHook {
      * @return to replace the original result, return a WCDB Cursor object wrapped by
      * [Operation.replacement], otherwise return [Operation.nop].
      */
-    fun onDatabaseQueried(thisObject: Any, factory: Any?, sql: String, selectionArgs: Array<String>?, editTable: String?, cancellationSignal: Any?, result: Any?): Operation<Any> = nop()
+    fun onDatabaseQueried(thisObject: Any, factory: Any?, sql: String, selectionArgs: Array<Any>?, editTable: String?, cancellationSignal: Any?, result: Any?): Operation<Any> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.insertWithOnConflict] method.

@@ -1,6 +1,7 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
 import android.content.Context
+import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
@@ -25,17 +26,17 @@ object SpellBook {
      * Refer: https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制
      */
     private val centers: List<EventCenter> = listOf(
-            Activities,
-            Adapters,
-            Database,
-            FileSystem,
-            MenuAppender,
-            Notifications,
-            SearchBar,
-            Storage,
-            UriRouter,
-            XLog,
-            XmlParser
+        Activities,
+        Adapters,
+        Database,
+        FileSystem,
+        MenuAppender,
+        Notifications,
+        SearchBar,
+        Storage,
+        UriRouter,
+        XLog,
+        XmlParser
     )
 
     /**
@@ -57,19 +58,22 @@ object SpellBook {
             else -> return false
         }
         // 检查微信依赖的JNI库是否存在, 以此判断当前应用是不是微信
-        val features = listOf (
-                "libwechatcommon.so",
-                "libwechatmm.so",
-                "libwechatnetwork.so",
-                "libwechatsight.so",
-                "libwechatxlog.so"
+        val features = listOf(
+            "libwechatcommon.so",
+            "libwechatmm.so",
+            "libwechatnetwork.so",
+            "libwechatsight.so",
+            "libwechatxlog.so"
         )
         return try {
             val libraryDir = File(lpparam.appInfo.nativeLibraryDir)
             features.filter { filename ->
+                Log.d("xposed", filename)
                 File(libraryDir, filename).exists()
             }.size >= 3
-        } catch (t: Throwable) { false }
+        } catch (t: Throwable) {
+            false
+        }
     }
 
     /**
@@ -97,8 +101,10 @@ object SpellBook {
     fun getApplicationVersion(packageName: String): Version {
         val pm = getSystemContext().packageManager
         val versionName = pm.getPackageInfo(packageName, 0)?.versionName
-        return Version(versionName
-                ?: throw Error("Failed to get the version of $packageName"))
+        return Version(
+            versionName
+                ?: throw Error("Failed to get the version of $packageName")
+        )
     }
 
     /**

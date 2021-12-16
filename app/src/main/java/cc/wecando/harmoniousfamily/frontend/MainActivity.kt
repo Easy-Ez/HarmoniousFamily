@@ -11,8 +11,8 @@ import cc.wecando.harmoniousfamily.Global.PREFERENCE_NAME_DEVELOPER
 import cc.wecando.harmoniousfamily.Global.PREFERENCE_NAME_SETTINGS
 import cc.wecando.harmoniousfamily.R
 import cc.wecando.harmoniousfamily.databinding.ActivityMainBinding
-import cc.wecando.harmoniousfamily.frontend.fragment.EnvStatusFragment
-import cc.wecando.harmoniousfamily.frontend.fragment.PrefFragment
+import cc.wecando.harmoniousfamily.frontend.fragments.EnvStatusFragment
+import cc.wecando.harmoniousfamily.frontend.fragments.PrefFragment
 import cc.wecando.harmoniousfamily.utils.LocaleUtil
 import com.google.android.material.navigation.NavigationView
 

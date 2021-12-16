@@ -1,4 +1,4 @@
-package cc.wecando.harmoniousfamily.frontend.fragment
+package cc.wecando.harmoniousfamily.frontend.fragments
 
 import android.app.Activity
 import android.content.BroadcastReceiver
@@ -32,6 +32,9 @@ class EnvStatusFragment : Fragment() {
         bind = FragmentStatusBinding.inflate(inflater, container, false)
         return bind.root
     }
+
+    fun isModuleLoaded() = false
+    fun getXposedVersion() = 0
 
     companion object {
         private const val TAG = "StatusFragment"

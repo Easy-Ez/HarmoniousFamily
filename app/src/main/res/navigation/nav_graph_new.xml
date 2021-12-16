@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@id/nav_status"
-        android:name="cc.wecando.harmoniousfamily.frontend.fragment.EnvStatusFragment"
+        android:name="cc.wecando.harmoniousfamily.frontend.fragments.EnvStatusFragment"
         android:label="@string/status">
         <action
             android:id="@+id/action_nav_status_to_nav_settings"
@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_settings"
-        android:name="cc.wecando.harmoniousfamily.frontend.fragment.PrefFragment"
+        android:name="cc.wecando.harmoniousfamily.frontend.fragments.PrefFragment"
         android:label="@string/settings" />
 
 </navigation>
