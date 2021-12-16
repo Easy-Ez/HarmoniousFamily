@@ -36,7 +36,7 @@ object Classes {
                     )
                     .firstOrNull()
             }
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.chatting")
                     .filterAnonymousClass()
                     .filterBySuper(MMFragmentActivity, 1)

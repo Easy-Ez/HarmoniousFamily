@@ -16,7 +16,7 @@ object Classes {
 
     private fun getEncEngineByRules(): Class<*>? {
         return when {
-            wxVersion!! >= Version("8.0.6") -> {
+            wxVersion!! >= Version("8.0.1") -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.modelsfs")
                     .filterByConstructor(C.Long)
                     .filterByConstructor(C.String)

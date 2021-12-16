@@ -101,6 +101,11 @@ class MirrorUnitTest {
         verifyPackage("$DOMESTIC_DIR/wechat-v8.0.6.apk")
     }
 
+    @Test
+    fun verifyDomesticPackage8_0_1() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v8.0.1.apk")
+    }
+
 //    @Test fun verifyDomesticPackage6_6_0() {
 //        verifyPackage("$DOMESTIC_DIR/wechat-v6.6.0.apk")
 //    }

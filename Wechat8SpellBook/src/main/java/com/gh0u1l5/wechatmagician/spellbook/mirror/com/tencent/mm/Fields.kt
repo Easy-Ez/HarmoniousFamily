@@ -17,7 +17,8 @@ object Fields {
 
     private fun getBitmapCacheFiled(): Field? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            // 新版本 ImgInfoStorage_mBitmapCache 是利用动态, 类型是接口.所以要先找到接口
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findFieldsWithGenericType(
                     ImgInfoStorage,
                     "${LruCacheInterface.canonicalName}<java.lang.String, android.graphics.Bitmap>"

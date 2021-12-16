@@ -26,7 +26,7 @@ object Classes {
 
     private fun getImgInfoStorageByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.16") -> {
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                     .filterAnonymousClass()
                     .filterByMethod(
@@ -54,7 +54,7 @@ object Classes {
 
     private fun getLruCacheWithListenerByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                     .filterBySuper(LruCache)
                     .filterByNoInterface()

@@ -16,9 +16,7 @@ object Classes {
     }
 
     val SnsTimeLineUI: Class<*> by wxLazy("SnsTimeLineUI") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-            .filterByField("androidx.appcompat.app.ActionBar")
-            .firstOrNull()
+        getSnsTimeLineUIByRules()
     }
 
     val SnsUploadUI: Class<*> by wxLazy("SnsUploadUI") {
@@ -55,4 +53,18 @@ object Classes {
         }
     }
 
+    private fun getSnsTimeLineUIByRules(): Class<*>? {
+        return when {
+            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
+                    .filterByField("androidx.appcompat.app.ActionBar")
+                    .firstOrNull()
+            }
+            else -> {
+                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
+                    .filterByField("android.support.v7.app.ActionBar")
+                    .firstOrNull()
+            }
+        }
+    }
 }

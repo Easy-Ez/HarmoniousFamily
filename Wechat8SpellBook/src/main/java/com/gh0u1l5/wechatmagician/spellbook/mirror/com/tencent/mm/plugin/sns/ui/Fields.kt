@@ -19,7 +19,7 @@ object Fields {
 
     private fun getSnsEditTextField(): Field? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findFieldsWithType(SnsUploadUI, SnsEditTextInterface.name)
                     .firstOrNull()?.apply { isAccessible = true }
             }

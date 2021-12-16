@@ -30,7 +30,7 @@ object Classes {
 
     private fun getXmlParserByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.sdk.platformtools")
                     .filterByMethod(C.Map, C.String, C.String, C.String)
                     .firstOrNull()

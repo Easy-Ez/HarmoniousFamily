@@ -17,7 +17,7 @@ object Methods {
 
     private fun getParseMethod(): Method? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findMethodsByExactParameters(
                     XmlParser,
                     C.Map,
