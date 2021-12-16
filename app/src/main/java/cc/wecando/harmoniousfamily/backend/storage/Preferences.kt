@@ -35,7 +35,7 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
                 // Load the shared preferences using ContentProvider.
                 val uri = Uri.parse("content://$PREFERENCE_PROVIDER_AUTHORITY/$preferencesName")
                 val cursor = context.contentResolver.query(uri, null, null, null, null)
-                cursor?.let {
+                cursor?.use {
                     while (it.moveToNext()) {
                         val key = it.getString(0)
                         val type = it.getString(2)
