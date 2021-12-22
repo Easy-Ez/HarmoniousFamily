@@ -18,7 +18,12 @@ interface IDatabaseHook {
      * [Operation.replacement], or a throwable wrapped by [Operation.interruption], otherwise return
      * [Operation.nop].
      */
-    fun onDatabaseOpening(path: String, factory: Any?, flags: Int, errorHandler: Any?): Operation<Any> = nop()
+    fun onDatabaseOpening(
+        path: String,
+        factory: Any?,
+        flags: Int,
+        errorHandler: Any?
+    ): Operation<Any> = nop()
 
     /**
      * Called when Wechat has finished calling [SQLiteDatabase.openDatabase] method.
@@ -31,7 +36,13 @@ interface IDatabaseHook {
      * @return to replace the original result, return a WCDB SQLiteDatabase object wrapped by
      * [Operation.replacement], otherwise return [Operation.nop].
      */
-    fun onDatabaseOpened(path: String, factory: Any?, flags: Int, errorHandler: Any?, result: Any?): Operation<Any> = nop()
+    fun onDatabaseOpened(
+        path: String,
+        factory: Any?,
+        flags: Int,
+        errorHandler: Any?,
+        result: Any?
+    ): Operation<Any> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.rawQueryWithFactory] method.
@@ -45,7 +56,14 @@ interface IDatabaseHook {
      * @return to bypass the original method, return [Operation.interruption] or a WCDB Cursor object
      * wrapped by [Operation.replacement], otherwise return [Operation.nop].
      */
-    fun onDatabaseQuerying(thisObject: Any, factory: Any?, sql: String, selectionArgs: Array<Any>?, editTable: String?, cancellationSignal: Any?): Operation<Any> = nop()
+    fun onDatabaseQuerying(
+        thisObject: Any,
+        factory: Any?,
+        sql: String,
+        selectionArgs: Array<Any>?,
+        editTable: String?,
+        cancellationSignal: Any?
+    ): Operation<Any> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.rawQueryWithFactory] method.
@@ -60,7 +78,15 @@ interface IDatabaseHook {
      * @return to replace the original result, return a WCDB Cursor object wrapped by
      * [Operation.replacement], otherwise return [Operation.nop].
      */
-    fun onDatabaseQueried(thisObject: Any, factory: Any?, sql: String, selectionArgs: Array<Any>?, editTable: String?, cancellationSignal: Any?, result: Any?): Operation<Any> = nop()
+    fun onDatabaseQueried(
+        thisObject: Any,
+        factory: Any?,
+        sql: String,
+        selectionArgs: Array<Any>?,
+        editTable: String?,
+        cancellationSignal: Any?,
+        result: Any?
+    ): Operation<Any> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.insertWithOnConflict] method.
@@ -74,7 +100,13 @@ interface IDatabaseHook {
      * otherwise return [Operation.nop]. The Long number represents the row ID of the newly inserted
      * row OR -1 if no row is inserted.
      */
-    fun onDatabaseInserting(thisObject: Any, table: String, nullColumnHack: String?, initialValues: ContentValues?, conflictAlgorithm: Int): Operation<Long> = nop()
+    fun onDatabaseInserting(
+        thisObject: Any,
+        table: String,
+        nullColumnHack: String?,
+        initialValues: ContentValues?,
+        conflictAlgorithm: Int
+    ): Operation<Long> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.insertWithOnConflict] method.
@@ -89,7 +121,14 @@ interface IDatabaseHook {
      * @return to replace the original result, return a Long number wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onDatabaseInserted(thisObject: Any, table: String, nullColumnHack: String?, initialValues: ContentValues?, conflictAlgorithm: Int, result: Long?): Operation<Long> = nop()
+    fun onDatabaseInserted(
+        thisObject: Any,
+        table: String,
+        nullColumnHack: String?,
+        initialValues: ContentValues?,
+        conflictAlgorithm: Int,
+        result: Long?
+    ): Operation<Long> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.updateWithOnConflict] method.
@@ -103,7 +142,14 @@ interface IDatabaseHook {
      * @return to bypass the original method, return a Int number wrapped by [Operation.replacement],
      * otherwise return [Operation.nop]. The Int number represents the number of rows affected.
      */
-    fun onDatabaseUpdating(thisObject: Any, table: String, values: ContentValues, whereClause: String?, whereArgs: Array<String>?, conflictAlgorithm: Int): Operation<Int> = nop()
+    fun onDatabaseUpdating(
+        thisObject: Any,
+        table: String,
+        values: ContentValues,
+        whereClause: String?,
+        whereArgs: Array<String>?,
+        conflictAlgorithm: Int
+    ): Operation<Int> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.updateWithOnConflict] method.
@@ -118,7 +164,15 @@ interface IDatabaseHook {
      * @return to replace the original result, return a Int number wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onDatabaseUpdated(thisObject: Any, table: String, values: ContentValues, whereClause: String?, whereArgs: Array<String>?, conflictAlgorithm: Int, result: Int): Operation<Int> = nop()
+    fun onDatabaseUpdated(
+        thisObject: Any,
+        table: String,
+        values: ContentValues,
+        whereClause: String?,
+        whereArgs: Array<String>?,
+        conflictAlgorithm: Int,
+        result: Int
+    ): Operation<Int> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.delete] method.
@@ -130,7 +184,12 @@ interface IDatabaseHook {
      * otherwise return [Operation.nop]. The Int number represents the number of rows affected if a
      * whereClause is passed in, 0 otherwise.
      */
-    fun onDatabaseDeleting(thisObject: Any, table: String, whereClause: String?, whereArgs: Array<String>?): Operation<Int> = nop()
+    fun onDatabaseDeleting(
+        thisObject: Any,
+        table: String,
+        whereClause: String?,
+        whereArgs: Array<String>?
+    ): Operation<Int> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.delete] method.
@@ -142,7 +201,13 @@ interface IDatabaseHook {
      * @return to replace the original result, return a Int number wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onDatabaseDeleted(thisObject: Any, table: String, whereClause: String?, whereArgs: Array<String>?, result: Int): Operation<Int> = nop()
+    fun onDatabaseDeleted(
+        thisObject: Any,
+        table: String,
+        whereClause: String?,
+        whereArgs: Array<String>?,
+        result: Int
+    ): Operation<Int> = nop()
 
     /**
      * Called when a WCDB SQLiteDatabase object is going to invoke [SQLiteDatabase.execSQL] method.
@@ -152,7 +217,12 @@ interface IDatabaseHook {
      * @param cancellationSignal a signal to cancel the operation in progress, or null if none.
      * @return to bypass the original method, return `true`, otherwise return `false`.
      */
-    fun onDatabaseExecuting(thisObject: Any, sql: String, bindArgs: Array<Any?>?, cancellationSignal: Any?) = false
+    fun onDatabaseExecuting(
+        thisObject: Any,
+        sql: String,
+        bindArgs: Array<*>?,
+        cancellationSignal: Any?
+    ) = false
 
     /**
      * Called when a WCDB SQLiteDatabase object has returned from [SQLiteDatabase.execSQL] method.
@@ -161,5 +231,11 @@ interface IDatabaseHook {
      * @param bindArgs only byte[], String, Long and Double are supported in bindArgs.
      * @param cancellationSignal a signal to cancel the operation in progress, or null if none.
      */
-    fun onDatabaseExecuted(thisObject: Any, sql: String, bindArgs: Array<Any?>?, cancellationSignal: Any?) { }
+    fun onDatabaseExecuted(
+        thisObject: Any,
+        sql: String,
+        bindArgs: Array<*>?,
+        cancellationSignal: Any?
+    ) {
+    }
 }

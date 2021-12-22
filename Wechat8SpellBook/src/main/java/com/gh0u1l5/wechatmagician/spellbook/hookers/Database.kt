@@ -1,7 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
 import android.content.ContentValues
-import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
@@ -14,7 +13,6 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 
 object Database : EventCenter() {
-    private val TAG = "Database"
     override val interfaces: List<Class<*>>
         get() = listOf(IDatabaseHook::class.java)
 
@@ -116,7 +114,6 @@ object Database : EventCenter() {
                     val nullColumnHack = param.args[1] as String?
                     val initialValues = param.args[2] as ContentValues?
                     val conflictAlgorithm = param.args[3] as Int
-                    Log.d(TAG, "insertWithOnConflict:beforeHookedMethod")
                     notifyForOperations("onDatabaseInserting", param) { plugin ->
                         (plugin as IDatabaseHook).onDatabaseInserting(
                             thisObject, table, nullColumnHack, initialValues, conflictAlgorithm
@@ -131,7 +128,6 @@ object Database : EventCenter() {
                     val initialValues = param.args[2] as ContentValues?
                     val conflictAlgorithm = param.args[3] as Int
                     val result = param.result as Long?
-                    Log.d(TAG, "insertWithOnConflict:afterHookedMethod")
                     notifyForOperations("onDatabaseInserted", param) { plugin ->
                         (plugin as IDatabaseHook).onDatabaseInserted(
                             thisObject,
@@ -233,27 +229,29 @@ object Database : EventCenter() {
         findAndHookMethod(
             SQLiteDatabase, "executeSql",
             C.String, C.ObjectArray, SQLiteCancellationSignal, object : XC_MethodHook() {
-                @Suppress("UNCHECKED_CAST")
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    val thisObject = param.thisObject
-                    val sql = param.args[0] as String
-                    val bindArgs = param.args[1] as Array<Any?>?
-                    val cancellation = param.args[2]
-                    notifyForBypassFlags("onDatabaseExecuting", param) { plugin ->
-                        (plugin as IDatabaseHook).onDatabaseExecuting(
-                            thisObject,
-                            sql,
-                            bindArgs,
-                            cancellation
-                        )
+                override fun beforeHookedMethod(param: MethodHookParam?) {
+                    param?.let {
+                        val thisObject = param.thisObject
+                        val sql = param.args[0] as String
+                        val bindArgs = param.args[1] as Array<*>?
+                        val cancellation = param.args[2]
+                        notifyForBypassFlags("onDatabaseExecuting", param) { plugin ->
+                            (plugin as IDatabaseHook).onDatabaseExecuting(
+                                thisObject,
+                                sql,
+                                bindArgs,
+                                cancellation
+                            )
+                        }
                     }
+
+
                 }
 
-                @Suppress("UNCHECKED_CAST")
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val thisObject = param.thisObject
                     val sql = param.args[0] as String
-                    val bindArgs = param.args[1] as Array<Any?>?
+                    val bindArgs = param.args[1] as Array<*>?
                     val cancellation = param.args[2]
                     notify("onDatabaseExecuted") { plugin ->
                         (plugin as IDatabaseHook).onDatabaseExecuted(
@@ -264,6 +262,7 @@ object Database : EventCenter() {
                         )
                     }
                 }
-            })
+            }
+        )
     }
 }

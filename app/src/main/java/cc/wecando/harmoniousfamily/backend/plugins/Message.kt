@@ -4,18 +4,9 @@ import android.content.ContentValues
 import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IDatabaseHook
-import de.robv.android.xposed.XposedBridge.log
 
 object Message : IDatabaseHook {
-    override fun onDatabaseOpened(
-        path: String,
-        factory: Any?,
-        flags: Int,
-        errorHandler: Any?,
-        result: Any?
-    ): Operation<Any> {
-        return super.onDatabaseOpened(path, factory, flags, errorHandler, result)
-    }
+
     override fun onDatabaseInserted(
         thisObject: Any,
         table: String,
@@ -24,9 +15,9 @@ object Message : IDatabaseHook {
         conflictAlgorithm: Int,
         result: Long?
     ): Operation<Long> {
-        Log.d("xposed", "table:${table},msg:$initialValues")
+        Log.d("Xposed", "table:${table},msg:$initialValues")
         if (table == "message") {
-            log("New Message: $initialValues")
+            Log.d("Xposed", "New Message: $initialValues")
         }
         return super.onDatabaseInserted(
             thisObject,
@@ -36,5 +27,18 @@ object Message : IDatabaseHook {
             conflictAlgorithm,
             result
         )
+    }
+
+    override fun onDatabaseExecuting(
+        thisObject: Any,
+        sql: String,
+        bindArgs: Array<*>?,
+        cancellationSignal: Any?
+    ): Boolean {
+        Log.d(
+            "Xposed",
+            "thisObject:${thisObject} sql:${sql} bindArgs:$bindArgs "
+        )
+        return super.onDatabaseExecuting(thisObject, sql, bindArgs, cancellationSignal)
     }
 }
