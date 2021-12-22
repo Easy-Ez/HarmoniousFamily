@@ -1,5 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -35,7 +36,7 @@ object Adapters : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as? BaseAdapter
                 if (adapter == null) {
-                    log("Expect address adapter to be BaseAdapter, get ${param.thisObject::class.java}")
+                     Log.d("Xposed","Expect address adapter to be BaseAdapter, get ${param.thisObject::class.java}")
                     return
                 }
                 notify("onAddressAdapterCreated") { plugin ->
@@ -50,7 +51,7 @@ object Adapters : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as? BaseAdapter
                 if (adapter == null) {
-                    log("Expect conversation adapter to be BaseAdapter, get ${param.thisObject::class.java}")
+                     Log.d("Xposed","Expect conversation adapter to be BaseAdapter, get ${param.thisObject::class.java}")
                     return
                 }
                 notify("onConversationAdapterCreated") { plugin ->

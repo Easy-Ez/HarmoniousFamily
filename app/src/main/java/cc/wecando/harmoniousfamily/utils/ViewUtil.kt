@@ -40,7 +40,7 @@ object ViewUtil {
             getAttr("isClickable")
             getAttr("isLongClickable")
 
-            XposedBridge.log("$prefix[$it] => ${child::class.java}, $attrs")
+            Log.d("Xposed", "$prefix[$it] => ${child::class.java}, $attrs")
             if (child is ViewGroup) {
                 dumpViewGroup("$prefix[$it]", child)
             }

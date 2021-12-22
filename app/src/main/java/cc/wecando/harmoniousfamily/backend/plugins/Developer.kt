@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ListAdapter
 import cc.wecando.harmoniousfamily.Global.DEVELOPER_DATABASE_DELETE
 import cc.wecando.harmoniousfamily.Global.DEVELOPER_DATABASE_EXECUTE
@@ -56,7 +57,7 @@ object Developer : HookerProvider {
             findAndHookMethod(C.View, "onTouchEvent", C.MotionEvent, object : XC_MethodHook() {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
-                    log("View.onTouchEvent => obj.class = ${param.thisObject::class.java}")
+                     Log.d("Xposed","View.onTouchEvent => obj.class = ${param.thisObject::class.java}")
                 }
             })
         }
@@ -101,8 +102,8 @@ object Developer : HookerProvider {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val menu = param.thisObject
                     val context = param.args[0]
-                    log("POPUP => menu.class = ${menu::class.java}")
-                    log("POPUP => context.class = ${context::class.java}")
+                     Log.d("Xposed","POPUP => menu.class = ${menu::class.java}")
+                     Log.d("Xposed","POPUP => context.class = ${context::class.java}")
                 }
             })
 
@@ -114,10 +115,10 @@ object Developer : HookerProvider {
                     @Throws(Throwable::class)
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val adapter = param.args[0] as ListAdapter? ?: return
-                        log("POPUP => adapter.count = ${adapter.count}")
+                         Log.d("Xposed","POPUP => adapter.count = ${adapter.count}")
                         (0 until adapter.count).forEach { index ->
-                            log("POPUP => adapter.item[$index] = ${adapter.getItem(index)}")
-                            log("POPUP => adapter.item[$index].class = ${adapter.getItem(index)::class.java}")
+                             Log.d("Xposed","POPUP => adapter.item[$index] = ${adapter.getItem(index)}")
+                             Log.d("Xposed","POPUP => adapter.item[$index].class = ${adapter.getItem(index)::class.java}")
                         }
                     }
                 })
@@ -140,7 +141,7 @@ object Developer : HookerProvider {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val sql = param.args[1] as String?
                         val selectionArgs = param.args[2] as Array<*>?
-                        log("DB => query sql = $sql, selectionArgs = ${argsToString(selectionArgs)}, db = ${param.thisObject}")
+                         Log.d("Xposed","DB => query sql = $sql, selectionArgs = ${argsToString(selectionArgs)}, db = ${param.thisObject}")
                     }
                 })
         }
@@ -153,7 +154,7 @@ object Developer : HookerProvider {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val table = param.args[0] as String?
                         val values = param.args[2] as ContentValues?
-                        log("DB => insert table = $table, values = $values, db = ${param.thisObject}")
+                         Log.d("Xposed","DB => insert table = $table, values = $values, db = ${param.thisObject}")
                     }
                 })
         }
@@ -214,7 +215,7 @@ object Developer : HookerProvider {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val sql = param.args[0] as String?
                         val bindArgs = param.args[1] as Array<*>?
-                        log("DB => executeSql sql = $sql, bindArgs = ${argsToString(bindArgs)}, db = ${param.thisObject}")
+                         Log.d("Xposed","DB => executeSql sql = $sql, bindArgs = ${argsToString(bindArgs)}, db = ${param.thisObject}")
                     }
                 })
         }
@@ -237,9 +238,9 @@ object Developer : HookerProvider {
                             val msg = param.args[1] as String?
                             val args = param.args[2] as Array<*>?
                             if (args == null) {
-                                log("LOG.${func.uppercase()} => [$tag] $msg")
+                                 Log.d("Xposed","LOG.${func.uppercase()} => [$tag] $msg")
                             } else {
-                                log("LOG.${func.uppercase()} => [$tag] ${msg?.format(*args)}")
+                                 Log.d("Xposed","LOG.${func.uppercase()} => [$tag] ${msg?.format(*args)}")
                             }
                         }
                     })
@@ -254,7 +255,7 @@ object Developer : HookerProvider {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val path = (param.args[0] as File?)?.absolutePath ?: return
-                    log("FILE => Read $path")
+                     Log.d("Xposed","FILE => Read $path")
                 }
             })
 
@@ -262,14 +263,14 @@ object Developer : HookerProvider {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val path = (param.args[0] as File?)?.absolutePath ?: return
-                    log("FILE => Write $path")
+                     Log.d("Xposed","FILE => Write $path")
                 }
             })
 
             findAndHookMethod(C.File, "delete", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val file = param.thisObject as File
-                    log("FILE => Delete ${file.absolutePath}")
+                     Log.d("Xposed","FILE => Delete ${file.absolutePath}")
                 }
             })
         }
@@ -283,7 +284,7 @@ object Developer : HookerProvider {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val xml = param.args[0] as String?
                     val root = param.args[1] as String?
-                    log("XML => root = $root, xml = $xml")
+                     Log.d("Xposed","XML => root = $root, xml = $xml")
                 }
             })
         }

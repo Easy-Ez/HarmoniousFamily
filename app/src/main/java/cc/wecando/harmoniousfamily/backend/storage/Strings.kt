@@ -1,9 +1,9 @@
 package cc.wecando.harmoniousfamily.backend.storage
 
+import android.util.Log
 import cc.wecando.harmoniousfamily.Global.SETTINGS_MODULE_LANGUAGE
 import cc.wecando.harmoniousfamily.R
 import cc.wecando.harmoniousfamily.backend.WechatHook
-import de.robv.android.xposed.XposedBridge.log
 import java.util.*
 
 object Strings {
@@ -89,11 +89,11 @@ object Strings {
         }
         val language = pref.getString(SETTINGS_MODULE_LANGUAGE, language)
         if (language !in hardcodedStrings) {
-            log("Unknown Language: $language")
+             Log.d("Xposed","Unknown Language: $language")
         }
         val strings = hardcodedStrings[language] ?: hardcodedStrings["en"]
         if (id !in strings!!) {
-            log("Unknown String ID: $id")
+             Log.d("Xposed","Unknown String ID: $id")
         }
         return strings[id] ?: "???"
     }

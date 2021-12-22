@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Environment.MEDIA_MOUNTED
+import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import cc.wecando.harmoniousfamily.BuildConfig
@@ -40,8 +41,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XposedBridge.log
-import de.robv.android.xposed.XposedHelpers.findAndHookMethod
+import de.robv.android.xposed.XposedHelpers.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.io.File
 
@@ -122,18 +122,23 @@ class WechatHook : IXposedHookLoadPackage {
         tryVerbosely {
             when (lpparam.packageName) {
                 MAGICIAN_PACKAGE_NAME ->
-                    hookAttachBaseContext(lpparam.classLoader) { _ ->
+                    hookAttachBaseContext(lpparam.classLoader) {
                         handleLoadMagician(lpparam.classLoader)
                     }
                 else -> if (isImportantWechatProcess(lpparam)) {
-                    log("Wechat Magician: process = ${lpparam.processName}, version = ${BuildConfig.VERSION_NAME}")
+                    Log.d(
+                        "Xposed",
+                        "Wechat Magician: process = ${lpparam.processName}, version = ${BuildConfig.VERSION_NAME}"
+                    )
                     hookAttachBaseContext(lpparam.classLoader) { context ->
-//                        if (!BuildConfig.DEBUG) {
+                        /* if (!BuildConfig.DEBUG) {
+                             handleLoadWechat(lpparam, context)
+                         } else {
+                             handleLoadWechatOnFly(lpparam, context)
+                         }*/
                         handleLoadWechat(lpparam, context)
-//                        } else {
-//                            handleLoadWechatOnFly(lpparam, context)
-//                    }
                     }
+                    handleDisableTinker(lpparam.classLoader)
                 }
             }
         }
@@ -194,11 +199,37 @@ class WechatHook : IXposedHookLoadPackage {
         }
     }
 
+    /**
+     * 禁用 tinker
+     */
+    private fun handleDisableTinker(classLoader: ClassLoader) {
+        val tinkerApplicationClass: Class<*>? =
+            findClassIfExists("com.tencent.tinker.loader.app.TinkerApplication", classLoader)
+        tinkerApplicationClass?.let {
+            findAndHookMethod(
+                tinkerApplicationClass,
+                "loadTinker",
+                object : XC_MethodReplacement() {
+                    override fun replaceHookedMethod(param: MethodHookParam?): Any {
+                        param?.let {
+                            val findField = findField(tinkerApplicationClass, "tinkerResultIntent");
+                            findField.isAccessible = true
+                            val intent = Intent()
+                            intent.putExtra("intent_return_code", -1);
+                            findField.set(it.thisObject, intent)
+                        }
+                        return Unit
+                    }
+                })
+        }
+
+    }
+
     // handleLoadWechatOnFly uses reflection to load updated module without reboot.
     private fun handleLoadWechatOnFly(lpparam: XC_LoadPackage.LoadPackageParam, context: Context) {
         val path = getApplicationApkPath(MAGICIAN_PACKAGE_NAME)
         if (!File(path).exists()) {
-            log("Cannot load module on fly: APK not found")
+            Log.d("Xposed", "Cannot load module on fly: APK not found")
             return
         }
         val pathClassLoader = PathClassLoader(path, ClassLoader.getSystemClassLoader())
