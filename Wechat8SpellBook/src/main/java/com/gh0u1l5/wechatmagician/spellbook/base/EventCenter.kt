@@ -1,5 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.base
 
+import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
 import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
@@ -9,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * SpellBook 框架的事件中心, 用于提供标准化的事件通知
  */
-abstract class EventCenter: HookerProvider {
+abstract class EventCenter : HookerProvider {
 
     /**
      * 事件中心所支持的接口列表, 任何想要注册到该中心的插件必须实现其中起码一个接口
@@ -27,7 +28,7 @@ abstract class EventCenter: HookerProvider {
      * "关注" 的判断标准是这个对象有没有直接实现一个和事件同名的方法, 从基类继承的方法不算在内
      */
     private fun Any.hasEvent(event: String) =
-            this::class.java.declaredMethods.any { it.name == event }
+        this::class.java.declaredMethods.any { it.name == event }
 
     /**
      * 向事件中心注册一个观察者
@@ -93,7 +94,7 @@ abstract class EventCenter: HookerProvider {
      * @param event 具体发生的事件
      * @param action 对观察者进行通知的回调函数
      */
-    inline fun <T: Any>notifyForResults(event: String, action: (Any) -> T?): List<T> {
+    inline fun <T : Any> notifyForResults(event: String, action: (Any) -> T?): List<T> {
         return findObservers(event)?.mapNotNull {
             tryVerbosely { action(it) }
         } ?: emptyList()
@@ -110,8 +111,13 @@ abstract class EventCenter: HookerProvider {
      * @param default 跳过函数调用之后, 仍然需要向 caller 提供一个返回值
      * @param action 对观察者进行通知的回调函数
      */
-    inline fun notifyForBypassFlags(event: String, param: XC_MethodHook.MethodHookParam, default: Any? = null, action: (Any) -> Boolean) {
-        val shouldBypass = notifyForResults(event, action).any()
+    inline fun notifyForBypassFlags(
+        event: String,
+        param: XC_MethodHook.MethodHookParam,
+        default: Any? = null,
+        action: (Any) -> Boolean
+    ) {
+        val shouldBypass = notifyForResults(event, action).any { it }
         if (shouldBypass) {
             param.result = default
         }
@@ -126,7 +132,11 @@ abstract class EventCenter: HookerProvider {
      * @param param 拦截函数调用后得到的 [XC_MethodHook.MethodHookParam] 对象
      * @param action 对观察者进行通知的回调函数
      */
-    inline fun notifyForOperations(event: String, param: XC_MethodHook.MethodHookParam, action: (Any) -> Operation<*>) {
+    inline fun notifyForOperations(
+        event: String,
+        param: XC_MethodHook.MethodHookParam,
+        action: (Any) -> Operation<*>
+    ) {
         val operations = notifyForResults(event, action)
         val result = operations.filter { it.returnEarly }.maxByOrNull { it.priority }
         if (result != null) {
