@@ -1,5 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
@@ -8,10 +9,9 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.hookers.*
 import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
 import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
-import de.robv.android.xposed.XposedBridge.log
+import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import de.robv.android.xposed.IXposedHookLoadPackage
 import java.io.File
 
 /**
@@ -45,18 +45,18 @@ object SpellBook {
      * @param lpparam 通过重载 [IXposedHookLoadPackage.handleLoadPackage] 方法拿到的
      * [XC_LoadPackage.LoadPackageParam] 对象
      */
+    @SuppressLint("LongLogTag")
     fun isImportantWechatProcess(lpparam: XC_LoadPackage.LoadPackageParam): Boolean {
         // 检查进程名
         val processName = lpparam.processName
-        when {
-            !processName.contains(':') -> {
-                // 找到主进程 继续
-            }
-            processName.endsWith(":tools") -> {
-                // 找到 :tools 进程 继续
-            }
-            else -> return false
-        }
+
+        val isImportantProcess = processName.contains("com.tencent.mm")
+                && (
+                !processName.contains(':')
+                        || processName.endsWith(":tools")
+                        || processName.endsWith(":push")
+                )
+
         // 检查微信依赖的JNI库是否存在, 以此判断当前应用是不是微信
         val features = listOf(
             "libwechatcommon.so",
@@ -65,21 +65,32 @@ object SpellBook {
             "libwechatsight.so",
             "libwechatxlog.so"
         )
-        return try {
+        try {
             val libraryDir = File(lpparam.appInfo.nativeLibraryDir)
-            features.filter { filename ->
-                Log.d("xposed", filename)
+//            Log.d(
+//                "Xposed-isImportantWechatProcess",
+//                "processName:${processName}:\nlibraryDir:${libraryDir}"
+//            )
+            val filterList = features.filter { filename ->
+                Log.d("Xposed", filename)
                 File(libraryDir, filename).exists()
-            }.size >= 3
+            }
+            filterList.size >= 3
+//            Log.d(
+//                "Xposed-isImportantWechatProcess",
+//                "processName:${processName}:\nsoList:${filterList.joinToString()}"
+//            )
         } catch (t: Throwable) {
-            false
+            Log.e("Xposed-isImportantWechatProcess", "isImportantWechatProcess", t)
         }
+
+        return isImportantProcess
     }
 
     /**
      * 利用 Reflection 获取当前的系统 Context
      */
-    fun getSystemContext(): Context {
+    private fun getSystemContext(): Context {
         val activityThreadClass = findClass("android.app.ActivityThread", null)
         val activityThread = callStaticMethod(activityThreadClass, "currentActivityThread")
         val context = callMethod(activityThread, "getSystemContext") as Context?
@@ -118,7 +129,7 @@ object SpellBook {
      * Refer: https://github.com/Gh0u1L5/WechatSpellbook/wiki/事件机制
      */
     fun startup(lpparam: XC_LoadPackage.LoadPackageParam, plugins: List<Any>?) {
-        log("Wechat SpellBook: ${plugins?.size ?: 0} plugins.")
+        Log.d("Xposed", "Wechat SpellBook: ${plugins?.size ?: 0} plugins.")
         WechatGlobal.init(lpparam)
         registerPlugins(plugins)
         registerHookers(plugins)
@@ -145,9 +156,9 @@ object SpellBook {
      * 检查插件中是否存在自定义的事件, 将它们直接注册到 Xposed 框架上
      */
     private fun registerHookers(plugins: List<Any>?) {
-        val providers = plugins?.filter { it is HookerProvider } ?: listOf()
+        val providers = plugins?.filterIsInstance<HookerProvider>() ?: listOf()
         (providers + listOf(ListViewHider, MenuAppender)).parallelForEach { provider ->
-            (provider as HookerProvider).provideStaticHookers()?.forEach { hooker ->
+            provider.provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
                     XposedUtil.postHooker(hooker)
                 }
