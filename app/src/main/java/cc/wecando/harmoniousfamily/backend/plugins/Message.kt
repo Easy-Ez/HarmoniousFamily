@@ -15,10 +15,7 @@ object Message : IDatabaseHook {
         conflictAlgorithm: Int,
         result: Long?
     ): Operation<Long> {
-        Log.d("Xposed", "table:${table},msg:$initialValues")
-        if (table == "message") {
-            Log.d("Xposed", "New Message: $initialValues")
-        }
+        Log.d("Xposed-onDatabaseInserted", "table:${table},msg:$initialValues")
         return super.onDatabaseInserted(
             thisObject,
             table,
@@ -36,8 +33,8 @@ object Message : IDatabaseHook {
         cancellationSignal: Any?
     ): Boolean {
         Log.d(
-            "Xposed",
-            "thisObject:${thisObject} sql:${sql} bindArgs:$bindArgs "
+            "Xposed-onDatabaseExecuting",
+            "sql:${sql} bindArgs:${bindArgs?.joinToString()} "
         )
         return super.onDatabaseExecuting(thisObject, sql, bindArgs, cancellationSignal)
     }

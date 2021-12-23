@@ -65,26 +65,18 @@ object SpellBook {
             "libwechatsight.so",
             "libwechatxlog.so"
         )
-        try {
+        return try {
             val libraryDir = File(lpparam.appInfo.nativeLibraryDir)
-//            Log.d(
-//                "Xposed-isImportantWechatProcess",
-//                "processName:${processName}:\nlibraryDir:${libraryDir}"
-//            )
             val filterList = features.filter { filename ->
-                Log.d("Xposed", filename)
                 File(libraryDir, filename).exists()
             }
-            filterList.size >= 3
-//            Log.d(
-//                "Xposed-isImportantWechatProcess",
-//                "processName:${processName}:\nsoList:${filterList.joinToString()}"
-//            )
+            isImportantProcess.or(filterList.size >= 3)
         } catch (t: Throwable) {
             Log.e("Xposed-isImportantWechatProcess", "isImportantWechatProcess", t)
+            isImportantProcess
         }
 
-        return isImportantProcess
+
     }
 
     /**

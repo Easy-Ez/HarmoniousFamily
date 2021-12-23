@@ -21,13 +21,13 @@ object XmlParser : EventCenter() {
     }
 
     private val onXmlParseHooker = Hooker {
-        // todo 新版本有三个参数
         hookMethod(XmlParser_parse, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val xml = param.args[0] as String
                 val root = param.args[1] as String
+                val newParam = param.args[2] as String?
                 notifyForOperations("onXmlParsing", param) { plugin ->
-                    (plugin as IXmlParserHook).onXmlParsing(xml, root)
+                    (plugin as IXmlParserHook).onXmlParsing(xml, root, newParam)
                 }
             }
 
@@ -35,9 +35,10 @@ object XmlParser : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val xml = param.args[0] as String
                 val root = param.args[1] as String
+                val newParam = param.args[2] as String?
                 val result = param.result as MutableMap<String, String>? ?: return
                 notify("onXmlParsed") { plugin ->
-                    (plugin as IXmlParserHook).onXmlParsed(xml, root, result)
+                    (plugin as IXmlParserHook).onXmlParsed(xml, root, newParam, result)
                 }
             }
         })

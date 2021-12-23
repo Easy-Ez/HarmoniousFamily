@@ -14,7 +14,11 @@ interface IXmlParserHook {
      * [Operation.replacement], or a throwable wrapped by [Operation.interruption], otherwise return
      * [Operation.nop].
      */
-    fun onXmlParsing(xml: String, root: String): Operation<MutableMap<String, String>?> = nop()
+    fun onXmlParsing(
+        xml: String,
+        root: String,
+        newParam: String?
+    ): Operation<MutableMap<String, String>?> = nop()
 
     /**
      * Called when the XML parser has parsed a XML string.
@@ -23,5 +27,11 @@ interface IXmlParserHook {
      * @param root the tag name of the section the caller want to parse.
      * @param result the map generated from the XML string.
      */
-    fun onXmlParsed(xml: String, root: String, result: MutableMap<String, String>) { }
+    fun onXmlParsed(
+        xml: String,
+        root: String,
+        newParam: String?,
+        result: MutableMap<String, String>
+    ) {
+    }
 }
