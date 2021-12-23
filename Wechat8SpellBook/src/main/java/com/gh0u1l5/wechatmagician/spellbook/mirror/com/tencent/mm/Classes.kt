@@ -57,7 +57,7 @@ object Classes {
             WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                     .filterBySuper(LruCache)
-                    .filterByNoInterface()
+                    .filterByInterfaceCount(1)
                     .firstOrNull()
             }
             else -> {

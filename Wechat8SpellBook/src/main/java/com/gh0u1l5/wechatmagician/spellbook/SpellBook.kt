@@ -36,7 +36,8 @@ object SpellBook {
         Storage,
         UriRouter,
         XLog,
-        XmlParser
+        XmlParser,
+        PlatformUtil
     )
 
     /**

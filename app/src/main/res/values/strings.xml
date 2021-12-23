@@ -60,6 +60,7 @@
     <string name="status_component_database">SQLite数据库劫持</string>
     <string name="status_component_xml_parser">XML解析器劫持</string>
     <string name="status_component_custom_scheme">URI路由劫持</string>
+    <string name="status_component_game">猜拳骰子劫持</string>
 
 
     <string name="pref_category_interface">用户界面</string>

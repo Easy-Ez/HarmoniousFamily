@@ -8,6 +8,7 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodExactI
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodsByExactParameters
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findStaticFieldsWithType
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findSupper
+import java.lang.reflect.Modifier
 
 /**
  * 一组 Class 对象的集合, 可以通过调用不同的 filter 函数筛选得到想要的结果
@@ -20,12 +21,26 @@ class Classes(private val classes: List<Class<*>>) {
         private const val TAG = "Reflection"
     }
 
-    fun filterByNoInterface(): Classes {
-        return Classes(classes.filter { it.interfaces.isNotEmpty() }.also {
+    /**
+     * 根据类实现的接口个数过滤
+     */
+    fun filterByInterfaceCount(count: Int = 0): Classes {
+        return Classes(classes.filter { it.interfaces.size == count }.also {
             if (it.isEmpty()) {
                 Log.w(TAG, "filterByNoInterface found nothing}")
             }
-        });
+        })
+    }
+
+    /**
+     * 根据类是否是 final 类型
+     */
+    fun filterByFinal(isFinal: Boolean = true): Classes {
+        return Classes(classes.filter { Modifier.isFinal(it.modifiers) == isFinal }.also {
+            if (it.isEmpty()) {
+                Log.w(TAG, "filterByNoInterface found nothing}")
+            }
+        })
     }
 
     fun filterBySuper(superClass: Class<*>?): Classes {
@@ -159,6 +174,15 @@ class Classes(private val classes: List<Class<*>>) {
             }
         })
     }
+
+    fun isOnlyOneOrContinue(run: (c: Classes) -> Class<*>?): Class<*>? {
+        return if (classes.size == 1) {
+            classes.firstOrNull()
+        } else {
+            run(this)
+        }
+    }
+
 
     fun firstOrNull(): Class<*>? {
         if (classes.size > 1) {

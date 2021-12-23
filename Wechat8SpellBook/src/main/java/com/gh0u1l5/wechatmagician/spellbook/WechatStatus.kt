@@ -24,6 +24,7 @@ object WechatStatus {
         STATUS_FLAG_NOTIFICATIONS,
         STATUS_FLAG_RESOURCES,
         STATUS_FLAG_URI_ROUTER,
+        STATUS_FLAG_GAME,
         STATUS_FLAG_XML_PARSER
     }
 
@@ -35,10 +36,14 @@ object WechatStatus {
     /**
      * 报告当前活跃的功能
      */
-    @Synchronized fun report(): IntArray = valid
+    @Synchronized
+    fun report(): IntArray = valid
 
     /**
      * 记录某功能启动完成
      */
-    @Synchronized fun toggle(flag: StatusFlag) { valid += flag.ordinal }
+    @Synchronized
+    fun toggle(flag: StatusFlag) {
+        valid += flag.ordinal
+    }
 }

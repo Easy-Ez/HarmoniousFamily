@@ -185,6 +185,29 @@
                     android:src="@drawable/ic_component_invalid" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/status_component_game"
+                    android:textColor="@color/text_color" />
+
+                <ImageView
+                    android:id="@+id/component_game_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="0"
+                    android:contentDescription="@string/status_component_invalid"
+                    android:src="@drawable/ic_component_invalid" />
+            </LinearLayout>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

@@ -25,7 +25,8 @@ class EnvStatusFragment : Fragment() {
         WechatStatus.StatusFlag.STATUS_FLAG_RESOURCES to R.id.component_resources_status,
         WechatStatus.StatusFlag.STATUS_FLAG_DATABASE to R.id.component_database_status,
         WechatStatus.StatusFlag.STATUS_FLAG_XML_PARSER to R.id.component_xml_parser_status,
-        WechatStatus.StatusFlag.STATUS_FLAG_URI_ROUTER to R.id.component_uri_router_status
+        WechatStatus.StatusFlag.STATUS_FLAG_URI_ROUTER to R.id.component_uri_router_status,
+        WechatStatus.StatusFlag.STATUS_FLAG_GAME to R.id.component_game_status
     )
 
     override fun onCreateView(

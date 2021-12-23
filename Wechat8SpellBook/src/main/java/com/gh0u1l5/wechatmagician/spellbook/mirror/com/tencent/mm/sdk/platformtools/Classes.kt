@@ -27,6 +27,15 @@ object Classes {
         getXmlParserByRules()
     }
 
+    val Utils: Class<*> by wxLazy("Utils") {
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.sdk.platformtools")
+            .filterByFinal()
+            .filterByMethod(C.String, "getRandomString", C.Int)
+            .isOnlyOneOrContinue {
+                it.filterByMethod(C.Int, "getIntRandom", C.Int, C.Int)
+                    .firstOrNull()
+            }
+    }
 
     private fun getXmlParserByRules(): Class<*>? {
         return when {
