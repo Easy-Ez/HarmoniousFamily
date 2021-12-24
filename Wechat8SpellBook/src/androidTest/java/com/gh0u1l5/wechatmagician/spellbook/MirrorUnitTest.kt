@@ -2,7 +2,6 @@ package com.gh0u1l5.wechatmagician.spellbook
 
 import android.content.Context
 import android.util.Log
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorClasses
@@ -13,10 +12,9 @@ import com.gh0u1l5.wechatmagician.spellbook.util.FileUtil
 import com.gh0u1l5.wechatmagician.spellbook.util.MirrorUtil
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import dalvik.system.PathClassLoader
-import org.junit.Assert.*
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.io.File
 import java.lang.ClassLoader.getSystemClassLoader
 import kotlin.system.measureTimeMillis
@@ -78,7 +76,7 @@ class MirrorUnitTest {
             }
 
             // 进行适配测试并生成结果
-            var result: List<Pair<String, String>>? = null
+            var result: List<Pair<String, String>>?
             val timeSearch = measureTimeMillis {
                 result = MirrorUtil.generateReportWithForceEval(objects)
             }
