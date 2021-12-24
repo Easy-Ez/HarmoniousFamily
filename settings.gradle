@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "HarmoniousFamily"
 include ':app'
 include ':Wechat8SpellBook'
+include ':ShortcutBadger'
