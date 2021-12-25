@@ -43,8 +43,8 @@ object AntiRevoke : IDatabaseHook, IFileSystemHook, IMessageStorageHook, IXmlPar
     }
 
     override fun onXmlParsed(
-        xml: String,
-        root: String,
+        xml: String?,
+        root: String?,
         newParam: String?,
         result: MutableMap<String, String>
     ) {

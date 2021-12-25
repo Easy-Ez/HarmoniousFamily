@@ -15,8 +15,8 @@ interface IXmlParserHook {
      * [Operation.nop].
      */
     fun onXmlParsing(
-        xml: String,
-        root: String,
+        xml: String?,
+        root: String?,
         newParam: String?
     ): Operation<MutableMap<String, String>?> = nop()
 
@@ -28,8 +28,8 @@ interface IXmlParserHook {
      * @param result the map generated from the XML string.
      */
     fun onXmlParsed(
-        xml: String,
-        root: String,
+        xml: String?,
+        root: String?,
         newParam: String?,
         result: MutableMap<String, String>
     ) {

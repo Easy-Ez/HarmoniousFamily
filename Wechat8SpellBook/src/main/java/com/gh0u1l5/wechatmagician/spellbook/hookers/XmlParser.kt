@@ -13,7 +13,7 @@ object XmlParser : EventCenter() {
     override val interfaces: List<Class<*>>
         get() = listOf(IXmlParserHook::class.java)
 
-    override fun provideEventHooker(event: String): Hooker? {
+    override fun provideEventHooker(event: String): Hooker {
         return when (event) {
             "onXmlParsing", "onXmlParsed" -> onXmlParseHooker
             else -> throw IllegalArgumentException("Unknown event: $event")
@@ -23,8 +23,8 @@ object XmlParser : EventCenter() {
     private val onXmlParseHooker = Hooker {
         hookMethod(XmlParser_parse, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                val xml = param.args[0] as String
-                val root = param.args[1] as String
+                val xml = param.args[0] as String?
+                val root = param.args[1] as String?
                 val newParam = param.args[2] as String?
                 notifyForOperations("onXmlParsing", param) { plugin ->
                     (plugin as IXmlParserHook).onXmlParsing(xml, root, newParam)
@@ -33,8 +33,8 @@ object XmlParser : EventCenter() {
 
             @Suppress("UNCHECKED_CAST")
             override fun afterHookedMethod(param: MethodHookParam) {
-                val xml = param.args[0] as String
-                val root = param.args[1] as String
+                val xml = param.args[0] as String?
+                val root = param.args[1] as String?
                 val newParam = param.args[2] as String?
                 val result = param.result as MutableMap<String, String>? ?: return
                 notify("onXmlParsed") { plugin ->
