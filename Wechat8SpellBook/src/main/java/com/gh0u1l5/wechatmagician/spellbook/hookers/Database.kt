@@ -6,6 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IDatabaseHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.Classes.SQLiteErrorHandler
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.database.Classes.SQLiteCipherSpec
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.database.Classes.SQLiteCursorFactory
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.database.Classes.SQLiteDatabase
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.support.Classes.SQLiteCancellationSignal
@@ -29,28 +30,48 @@ object Database : EventCenter() {
     }
 
     private val onOpenHooker = Hooker {
+        // 微信里面打开数据库会调用好几个 openDatabase 的重载方法, 最终都会调用
+        // openDatabase(String path, byte[] password, SQLiteCipherSpec cipher, CursorFactory factory, int flags, DatabaseErrorHandler errorHandler, int poolSize)
         findAndHookMethod(
-            SQLiteDatabase, "openDatabase",
-            C.String, SQLiteCursorFactory, C.Int, SQLiteErrorHandler, object : XC_MethodHook() {
+            SQLiteDatabase,
+            "openDatabase",
+            C.String,
+            C.ByteArray,
+            SQLiteCipherSpec,
+            SQLiteCursorFactory,
+            C.Int,
+            SQLiteErrorHandler,
+            C.Int,
+            object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val path = param.args[0] as String
-                    val factory = param.args[1]
-                    val flags = param.args[2] as Int
-                    val handler = param.args[3]
+                    val password = param.args[1] as ByteArray?
+                    val factory = param.args[3]
+                    val flags = param.args[4] as Int
+                    val handler = param.args[5]
+
                     notifyForOperations("onDatabaseOpening", param) { plugin ->
-                        (plugin as IDatabaseHook).onDatabaseOpening(path, factory, flags, handler)
+                        (plugin as IDatabaseHook).onDatabaseOpening(
+                            path,
+                            password?.toString(Charsets.UTF_8) ?: "",
+                            factory,
+                            flags,
+                            handler
+                        )
                     }
                 }
 
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val path = param.args[0] as String
-                    val factory = param.args[1]
-                    val flags = param.args[2] as Int
-                    val handler = param.args[3]
+                    val password = param.args[1] as ByteArray?
+                    val factory = param.args[3]
+                    val flags = param.args[4] as Int
+                    val handler = param.args[5]
                     val result = param.result
                     notifyForOperations("onDatabaseOpened", param) { plugin ->
                         (plugin as IDatabaseHook).onDatabaseOpened(
                             path,
+                            password?.toString(Charsets.UTF_8) ?: "",
                             factory,
                             flags,
                             handler,

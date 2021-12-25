@@ -11,6 +11,7 @@ interface IDatabaseHook {
      * Called when Wechat is going to invoke [SQLiteDatabase.openDatabase] method.
      *
      * @param path to database file to open and/or create.
+     * @param password of a database with ciphers
      * @param factory an optional factory class that is called to instantiate a cursor when query is called.
      * @param flags to control database access mode.
      * @param errorHandler the optional SQLiteErrorHandler object to be used to handle corruption.
@@ -20,6 +21,7 @@ interface IDatabaseHook {
      */
     fun onDatabaseOpening(
         path: String,
+        password: String,
         factory: Any?,
         flags: Int,
         errorHandler: Any?
@@ -29,6 +31,7 @@ interface IDatabaseHook {
      * Called when Wechat has finished calling [SQLiteDatabase.openDatabase] method.
      *
      * @param path to database file to open and/or create.
+     * @param password of a database with ciphers
      * @param factory an optional factory class that is called to instantiate a cursor when query is called.
      * @param flags to control database access mode.
      * @param errorHandler the optional SQLiteErrorHandler object to be used to handle corruption.
@@ -38,6 +41,7 @@ interface IDatabaseHook {
      */
     fun onDatabaseOpened(
         path: String,
+        password: String,
         factory: Any?,
         flags: Int,
         errorHandler: Any?,
