@@ -23,30 +23,37 @@ object Notifications : EventCenter() {
     }
 
     private val MessageHandlerHooker = Hooker {
-        findAndHookMethod(MMNotification_MessageHandler, "handleMessage", C.Message, object : XC_MethodHook() {
-            override fun beforeHookedMethod(param: MethodHookParam) {
-                val raw = param.args[0] as? Message ?: return
-                val talker   = raw.data.getString("notification.show.talker") ?: return
-                val content  = raw.data.getString("notification.show.message.content") ?: return
-                val type     = raw.data.getInt("notification.show.message.type")
-                val tipsFlag = raw.data.getInt("notification.show.tipsflag")
-                notifyForBypassFlags("onMessageHandling", param) { plugin ->
-                    (plugin as INotificationHook).onMessageHandling(
-                            INotificationHook.Message(talker, content, type, tipsFlag))
+        findAndHookMethod(
+            MMNotification_MessageHandler,
+            "handleMessage",
+            C.Message,
+            object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    val raw = param.args[0] as? Message ?: return
+                    val talker = raw.data.getString("notification.show.talker") ?: return
+                    val content = raw.data.getString("notification.show.message.content") ?: return
+                    val type = raw.data.getInt("notification.show.message.type")
+                    val tipsFlag = raw.data.getInt("notification.show.tipsflag")
+                    notifyForBypassFlags("onMessageHandling", param) { plugin ->
+                        (plugin as INotificationHook).onMessageHandling(
+                            INotificationHook.Message(talker, content, type, tipsFlag)
+                        )
+                    }
                 }
-            }
-            override fun afterHookedMethod(param: MethodHookParam) {
-                val raw = param.args[0] as? Message ?: return
-                val talker   = raw.data.getString("notification.show.talker") ?: return
-                val content  = raw.data.getString("notification.show.message.content") ?: return
-                val type     = raw.data.getInt("notification.show.message.type")
-                val tipsFlag = raw.data.getInt("notification.show.tipsflag")
-                notify("onMessageHandled") { plugin ->
-                    (plugin as INotificationHook).onMessageHandled(
-                            INotificationHook.Message(talker, content, type, tipsFlag))
+
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    val raw = param.args[0] as? Message ?: return
+                    val talker = raw.data.getString("notification.show.talker") ?: return
+                    val content = raw.data.getString("notification.show.message.content") ?: return
+                    val type = raw.data.getInt("notification.show.message.type")
+                    val tipsFlag = raw.data.getInt("notification.show.tipsflag")
+                    notify("onMessageHandled") { plugin ->
+                        (plugin as INotificationHook).onMessageHandled(
+                            INotificationHook.Message(talker, content, type, tipsFlag)
+                        )
+                    }
                 }
-            }
-        })
+            })
 
         WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_NOTIFICATIONS)
     }
