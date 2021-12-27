@@ -1,6 +1,8 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
@@ -14,11 +16,11 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
 
 object SearchBar : EventCenter() {
-
+    private val mainHandler = Handler(Looper.getMainLooper())
     override val interfaces: List<Class<*>>
         get() = listOf(ISearchBarConsole::class.java)
 
-    override fun provideEventHooker(event: String): Hooker? {
+    override fun provideEventHooker(event: String): Hooker {
         return when (event) {
             "onHandleCommand" -> SearchBarHooker
             else -> throw IllegalArgumentException("Unknown event: $event")
@@ -30,24 +32,51 @@ object SearchBar : EventCenter() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val search = param.thisObject as EditText
                 search.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) = Unit
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) = Unit
 
                     override fun afterTextChanged(editable: Editable?) {
-                        val context = search.context
-                        var command = editable.toString()
-                        if (command.startsWith("#") && command.endsWith("#")) {
-                            command = command.drop(1).dropLast(1)
-                            notifyParallel("onHandleCommand") { plugin ->
-                                val consumed = (plugin as ISearchBarConsole).onHandleCommand(context, command)
-                                if (consumed) {
-                                    // Hide Input Method
-                                    val imm = search.context.getSystemService(INPUT_METHOD_SERVICE)
-                                    (imm as InputMethodManager).hideSoftInputFromWindow(search.windowToken, 0)
+                        editable?.let {
+                            val context = search.context
+                            var command = it.toString()
+                            if (command.startsWith("#") && command.endsWith("#")) {
+                                command = command.drop(1).dropLast(1)
+                                notifyParallelForResults("onHandleCommand", { plugin ->
+                                    (plugin as ISearchBarConsole).onHandleCommand(
+                                        context,
+                                        command
+                                    )
+                                }) { results ->
+                                    val consumed = results.any { result -> result }
+                                    if (consumed) {
+                                        mainHandler.post {
+                                            // clear
+                                            it.clear()
+                                            // Hide Input Method
+                                            val imm =
+                                                search.context.getSystemService(INPUT_METHOD_SERVICE)
+                                            (imm as InputMethodManager).hideSoftInputFromWindow(
+                                                search.windowToken,
+                                                0
+                                            )
+                                        }
+
+                                    }
                                 }
                             }
                         }
+
                     }
                 })
             }
