@@ -1,9 +1,14 @@
 package com.gh0u1l5.wechatmagician.spellbook.util
 
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 /**
@@ -20,13 +25,15 @@ object ParallelUtil {
      *
      * @param nThread 该线程池的线程总数, 默认值为当前设备的 CPU 总数
      */
-    @JvmStatic fun createThreadPool(nThread: Int = processors): ExecutorService =
-            Executors.newFixedThreadPool(nThread)
+    @JvmStatic
+    fun createThreadPool(nThread: Int = processors): ExecutorService =
+        Executors.newFixedThreadPool(nThread)
 
     /**
      * 进行一次并行计算的 Map 操作
      */
-    @JvmStatic inline fun <T, R> List<T>.parallelMap(crossinline transform: (T) -> R): List<R> {
+    @JvmStatic
+    inline fun <T, R> List<T>.parallelMap(crossinline transform: (T) -> R): List<R> {
         val sectionSize = size / processors
 
         val main = List(processors) { mutableListOf<R>() }
@@ -50,7 +57,8 @@ object ParallelUtil {
     /**
      * 进行一次并行计算的 ForEach 操作
      */
-    @JvmStatic inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
+    @JvmStatic
+    inline fun <T> Iterable<T>.parallelForEach(crossinline action: (T) -> Unit) {
         val pool = createThreadPool()
         val iterator = iterator()
         while (iterator.hasNext()) {
@@ -62,4 +70,30 @@ object ParallelUtil {
         pool.shutdown()
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
     }
+
+    fun <T, R> Iterable<T>.pmap(
+        transform: (T) -> R?
+    ): List<R> {
+        val pool = createThreadPool()
+        // default size is just an inlined version of kotlin.collections.collectionSizeOrDefault
+        val defaultSize = if (this is Collection<*>) this.size else 10
+        val destination = Collections.synchronizedList(ArrayList<R?>(defaultSize))
+
+        for (item in this) {
+            pool.submit { destination.add(transform(item)) }
+        }
+        pool.shutdown()
+        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
+        return ArrayList<R>(destination.filterNotNull())
+    }
+
+
+    /**
+     * 进行一次并行计算的 map 操作
+     */
+    suspend fun <T, R> Iterable<T>.parallelMap(transform: suspend (T) -> R): List<R> =
+        coroutineScope {
+            mapNotNull { async { transform(it) } }.awaitAll().filterNotNull()
+        }
+
 }

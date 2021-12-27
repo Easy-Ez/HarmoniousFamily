@@ -1,10 +1,13 @@
 package com.gh0u1l5.wechatmagician.spellbook.base
 
-import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelForEach
+import com.gh0u1l5.wechatmagician.spellbook.util.ParallelUtil.parallelMap
 import com.gh0u1l5.wechatmagician.spellbook.util.XposedUtil
 import de.robv.android.xposed.XC_MethodHook
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -85,6 +88,26 @@ abstract class EventCenter : HookerProvider {
     inline fun notifyParallel(event: String, crossinline action: (Any) -> Unit) {
         findObservers(event)?.parallelForEach { observer ->
             tryVerbosely { action(observer) }
+        }
+    }
+
+
+    /**
+     * 通知所有正在观察某个事件的观察者, 并收集它们的反馈 （并行计算版本）
+     *
+     * @param event 具体发生的事件
+     * @param action 对观察者进行通知的回调函数
+     * @param callback 异步回调
+     */
+    inline fun <T : Any> notifyParallelForResults(
+        event: String,
+        crossinline action: (Any) -> T?,
+        crossinline callback: (List<T>) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            callback(findObservers(event)?.parallelMap { observer ->
+                tryVerbosely { action(observer) }
+            }?.filterNotNull() ?: emptyList())
         }
     }
 
