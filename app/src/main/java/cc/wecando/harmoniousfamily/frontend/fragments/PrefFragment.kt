@@ -24,7 +24,6 @@ class PrefFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-//        setPreferencesFromResource(R.xml.root_preferences, rootKey)
         if (arguments != null) {
             val preferencesResId = requireArguments().getInt(ARG_PREF_RES)
             val preferencesName = requireArguments().getString(ARG_PREF_NAME)

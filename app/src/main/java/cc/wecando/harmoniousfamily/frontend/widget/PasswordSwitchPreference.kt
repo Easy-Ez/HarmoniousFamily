@@ -2,10 +2,11 @@ package cc.wecando.harmoniousfamily.frontend.widget
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.preference.SwitchPreference
 import cc.wecando.harmoniousfamily.R
 import cc.wecando.harmoniousfamily.utils.PasswordUtil
 
-class PasswordSwitchPreference : androidx.preference.SwitchPreference {
+class PasswordSwitchPreference : SwitchPreference {
 
     constructor(context: Context) : super(context)
 

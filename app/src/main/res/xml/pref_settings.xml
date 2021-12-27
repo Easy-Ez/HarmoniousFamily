@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--suppress AndroidElementNotAllowed -->
+<?xml version="1.0" encoding="utf-8"?><!--suppress AndroidElementNotAllowed -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pref_category_interface">
         <SwitchPreference
@@ -64,6 +63,34 @@
             android:singleLine="true"
             android:summary="@string/pref_list_keyword_blacklist_summary"
             android:title="@string/pref_list_keyword_blacklist" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/pref_category_game">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_game_rps_flag"
+            android:summary="@string/pref_toggle_rps_summary"
+            android:title="@string/pref_toggle_rps" />
+        <ListPreference
+            android:defaultValue="0"
+            android:dependency="settings_game_rps_flag"
+            android:entries="@array/pref_option_module_rps_entry"
+            android:entryValues="@array/pref_option_module_rps_entry_values"
+            android:key="settings_game_rps"
+            android:title="@string/pref_list_rps" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_game_dice_flag"
+            android:summary="@string/pref_toggle_dice_summary"
+            android:title="@string/pref_toggle_dice" />
+        <ListPreference
+            android:defaultValue="0"
+            android:dependency="settings_game_dice_flag"
+            android:entries="@array/pref_option_module_dice_entry"
+            android:entryValues="@array/pref_option_module_dice_entry_values"
+            android:key="settings_game_dice"
+            android:title="@string/pref_list_dice" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_settings_miscellaneous">
         <SwitchPreference

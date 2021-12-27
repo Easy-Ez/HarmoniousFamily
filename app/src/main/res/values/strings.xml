@@ -66,6 +66,8 @@
     <string name="pref_category_interface">用户界面</string>
     <string name="pref_toggle_hide_icon">隐藏启动图标</string>
     <string name="pref_option_module_language">显示语言</string>
+
+
     <string-array name="pref_option_module_language_entries">
         <item>中文</item>
         <item>英文</item>
@@ -74,6 +76,7 @@
         <item>zh</item>
         <item>en</item>
     </string-array>
+
 
     <string name="pref_category_chatting">聊天消息</string>
     <string name="pref_toggle_chatroom_hider">启用群聊隐藏</string>
@@ -90,6 +93,42 @@
     <string name="pref_toggle_keyword_blacklist_summary">使你免除七夕不敢开朋友圈的苦恼</string>
     <string name="pref_list_keyword_blacklist">关键字黑名单</string>
     <string name="pref_list_keyword_blacklist_summary">使用空格分隔，性能较差的手机注意不要写太长</string>
+
+    <string name="pref_category_game">游戏</string>
+    <string name="pref_toggle_rps">启用猜拳</string>
+    <string name="pref_toggle_rps_summary">石头剪刀布开关控制</string>
+    <string name="pref_list_rps">强制猜拳结果</string>
+    <string-array name="pref_option_module_rps_entry">
+        <item>剪刀✂️</item>
+        <item>石头</item>
+        <item>布</item>
+    </string-array>
+    <string-array name="pref_option_module_rps_entry_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string name="pref_toggle_dice">启用骰子</string>
+    <string name="pref_toggle_dice_summary">骰子🎲点数控制</string>
+    <string name="pref_list_dice">强制点数结果</string>
+
+    <string-array name="pref_option_module_dice_entry">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="pref_option_module_dice_entry_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
 
     <string name="pref_category_settings_miscellaneous">杂项</string>
     <string name="pref_toggle_auto_login">启用自动登录</string>
