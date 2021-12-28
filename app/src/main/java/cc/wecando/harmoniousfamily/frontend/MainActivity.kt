@@ -20,9 +20,14 @@ import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    companion object {
+        const val KEY_CURRENT_ID = "key_current_id"
+    }
+
     private val bind by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+    private var currentMenuId: Int = 0
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(LocaleUtil.onAttach(base))
@@ -56,6 +61,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         bind.navView.setNavigationItemSelectedListener(this)
 
         if (savedInstanceState == null) {
+            currentMenuId = R.id.nav_status
             supportFragmentManager.beginTransaction()
                 .add(
                     R.id.main_container,
@@ -63,6 +69,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     R.id.nav_status.toString()
                 )
                 .commit()
+        } else {
+            currentMenuId = savedInstanceState.getInt(KEY_CURRENT_ID)
+            toggleFragment(currentMenuId, supportFragmentManager.beginTransaction())
         }
     }
 
@@ -75,6 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        currentMenuId = item.itemId
         val cacheFragment = supportFragmentManager.findFragmentByTag(item.itemId.toString())
         val transaction = supportFragmentManager.beginTransaction()
         if (cacheFragment == null) {
@@ -93,7 +103,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             transaction.add(R.id.main_container, fragment, item.itemId.toString())
         }
-        toggleFragment(item, transaction)
+        toggleFragment(item.itemId, transaction)
 
 
         bind.drawerLayout.closeDrawer(GravityCompat.START)
@@ -101,10 +111,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    private fun toggleFragment(item: MenuItem, beginTransaction: FragmentTransaction) {
+    private fun toggleFragment(menuId: Int, beginTransaction: FragmentTransaction) {
         for (frag in supportFragmentManager.fragments) {
             if (frag.isAdded) {
-                if (frag.tag == item.itemId.toString()) {
+                if (frag.tag == menuId.toString()) {
                     beginTransaction.show(frag)
                 } else {
                     beginTransaction.hide(frag)
@@ -112,6 +122,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         beginTransaction.commitAllowingStateLoss()
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_CURRENT_ID, currentMenuId)
     }
 
 }
