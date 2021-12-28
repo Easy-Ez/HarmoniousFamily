@@ -43,8 +43,8 @@ object PasswordUtil {
             okay = context.getString(R.string.button_ok)
             cancel = context.getString(R.string.button_cancel)
         } else {
-            okay = context.getString(R.string.button_ok)
-            cancel = context.getString(R.string.button_cancel)
+            okay = Strings.getString(R.string.button_ok)
+            cancel = Strings.getString(R.string.button_cancel)
         }
 
         val input = EditText(context).apply {
@@ -101,7 +101,7 @@ object PasswordUtil {
         }
 
         askPassword(context, title, message) { input ->
-            val result = PasswordUtil.verifyPassword(encrypted, input)
+            val result = verifyPassword(encrypted, input)
             if (result) {
                 onSuccess(input)
                 Toast.makeText(context, promptCorrectPassword, Toast.LENGTH_SHORT).show()
