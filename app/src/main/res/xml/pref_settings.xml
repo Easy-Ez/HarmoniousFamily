@@ -72,25 +72,25 @@
             android:key="settings_game_rps_flag"
             android:summary="@string/pref_toggle_rps_summary"
             android:title="@string/pref_toggle_rps" />
-        <ListPreference
+        <cc.wecando.harmoniousfamily.frontend.widget.IntListPreference
             android:defaultValue="0"
             android:dependency="settings_game_rps_flag"
             android:entries="@array/pref_option_module_rps_entry"
             android:entryValues="@array/pref_option_module_rps_entry_values"
             android:key="settings_game_rps"
-            android:title="@string/pref_list_rps" />
+            android:title="@string/title_rps_list_disable" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="settings_game_dice_flag"
             android:summary="@string/pref_toggle_dice_summary"
             android:title="@string/pref_toggle_dice" />
-        <ListPreference
+        <cc.wecando.harmoniousfamily.frontend.widget.IntListPreference
             android:defaultValue="0"
             android:dependency="settings_game_dice_flag"
             android:entries="@array/pref_option_module_dice_entry"
             android:entryValues="@array/pref_option_module_dice_entry_values"
             android:key="settings_game_dice"
-            android:title="@string/pref_list_dice" />
+            android:title="@string/title_dice_list_disable" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_category_settings_miscellaneous">
         <SwitchPreference
@@ -108,8 +108,8 @@
             android:title="@string/pref_toggle_secret_friend" />
         <cc.wecando.harmoniousfamily.frontend.widget.PasswordPreference
             android:dependency="settings_secret_friend"
+            android:inputType="textPassword"
             android:key="settings_secret_friend_password"
-            android:password="false"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/pref_text_secret_friend_password" />

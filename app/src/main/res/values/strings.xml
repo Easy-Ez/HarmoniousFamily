@@ -97,7 +97,8 @@
     <string name="pref_category_game">游戏</string>
     <string name="pref_toggle_rps">启用猜拳</string>
     <string name="pref_toggle_rps_summary">石头剪刀布开关控制</string>
-    <string name="pref_list_rps">强制猜拳结果</string>
+    <string name="title_rps_list">点我强制猜拳结果, 当前结果为:%s</string>
+    <string name="title_rps_list_disable">未启用猜拳开关</string>
     <string-array name="pref_option_module_rps_entry">
         <item>剪刀✂️</item>
         <item>石头</item>
@@ -110,7 +111,8 @@
     </string-array>
     <string name="pref_toggle_dice">启用骰子</string>
     <string name="pref_toggle_dice_summary">骰子🎲点数控制</string>
-    <string name="pref_list_dice">强制点数结果</string>
+    <string name="title_dice_list">点我强制点数结果,当前结果为:%d</string>
+    <string name="title_dice_list_disable">未启用骰子开关</string>
 
     <string-array name="pref_option_module_dice_entry">
         <item>1</item>

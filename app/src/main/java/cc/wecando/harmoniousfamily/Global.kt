@@ -1,7 +1,6 @@
 package cc.wecando.harmoniousfamily
 
 import android.annotation.SuppressLint
-import android.os.Build
 
 object Global {
     const val SALT = "W3ch4tM4g1c14n"
@@ -44,6 +43,14 @@ object Global {
     const val SETTINGS_INTERFACE_HIDE_ICON = "settings_interface_hide_icon"
     const val SETTINGS_MARK_ALL_AS_READ = "settings_mark_all_as_read"
     const val SETTINGS_MODULE_LANGUAGE = "settings_module_language"
+
+    // 游戏相关 sp key
+    const val SETTINGS_GAME_RPS_FLAG = "settings_game_rps_flag"
+    const val SETTINGS_GAME_RPS = "settings_game_rps"
+    const val SETTINGS_GAME_DICE_FLAG = "settings_game_dice_flag"
+    const val SETTINGS_GAME_DICE = "settings_game_dice"
+
+
     const val SETTINGS_SECRET_FRIEND = "settings_secret_friend"
     const val SETTINGS_SECRET_FRIEND_PASSWORD = "settings_secret_friend_password"
     const val SETTINGS_SECRET_FRIEND_HIDE_OPTION = "settings_secret_friend_hide_option"

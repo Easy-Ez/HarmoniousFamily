@@ -11,17 +11,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import cc.wecando.harmoniousfamily.Global.ACTION_UPDATE_PREF
 import cc.wecando.harmoniousfamily.Global.MAGICIAN_PACKAGE_NAME
+import cc.wecando.harmoniousfamily.Global.SETTINGS_GAME_DICE
+import cc.wecando.harmoniousfamily.Global.SETTINGS_GAME_DICE_FLAG
+import cc.wecando.harmoniousfamily.Global.SETTINGS_GAME_RPS
+import cc.wecando.harmoniousfamily.Global.SETTINGS_GAME_RPS_FLAG
 import cc.wecando.harmoniousfamily.Global.SETTINGS_INTERFACE_HIDE_ICON
 import cc.wecando.harmoniousfamily.Global.SETTINGS_MODULE_LANGUAGE
 import cc.wecando.harmoniousfamily.R
+import cc.wecando.harmoniousfamily.utils.GameUtils
 import cc.wecando.harmoniousfamily.utils.IPCUtil.putExtra
 import cc.wecando.harmoniousfamily.utils.LocaleUtil
 
 class PrefFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private val gameKeyArray = arrayOf(
+        SETTINGS_GAME_RPS,
+        SETTINGS_GAME_DICE,
+        SETTINGS_GAME_RPS_FLAG,
+        SETTINGS_GAME_DICE_FLAG
+    )
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         if (arguments != null) {
@@ -32,6 +45,7 @@ class PrefFragment : PreferenceFragmentCompat(),
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,7 +54,11 @@ class PrefFragment : PreferenceFragmentCompat(),
         return super.onCreateView(inflater, container, savedInstanceState)?.apply {
             setBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.card_background))
         }
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        changeGameTitle()
     }
 
     override fun onStart() {
@@ -55,6 +73,7 @@ class PrefFragment : PreferenceFragmentCompat(),
 
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        tryChangeGameTitleWhenSpChange(key)
         when (key) {
             SETTINGS_INTERFACE_HIDE_ICON -> {
                 // Hide/Show the icon as required.
@@ -91,6 +110,57 @@ class PrefFragment : PreferenceFragmentCompat(),
                 })
             }
         }
+    }
+
+    /**
+     * sp 变化时, 尝试更新相关 UI
+     */
+    private fun tryChangeGameTitleWhenSpChange(key: String) {
+        if (key in gameKeyArray) {
+            changeGameTitle()
+        }
+    }
+
+    /**
+     * 根据 game 存放在 sp 中的值, 更新 UI
+     */
+    private fun changeGameTitle() {
+        val sp = preferenceScreen.sharedPreferences
+        val rpsPref = findPreference(SETTINGS_GAME_RPS) as Preference?
+        val dicePref = findPreference(SETTINGS_GAME_DICE) as Preference?
+
+        rpsPref?.let {
+            it.title = if (sp.getBoolean(SETTINGS_GAME_RPS_FLAG, false)) {
+                getString(
+                    R.string.title_rps_list, GameUtils.getRPSTextByValue(
+                        sp.getInt(
+                            SETTINGS_GAME_RPS,
+                            0
+                        ), requireContext()
+                    )
+                )
+            } else {
+                getString(
+                    R.string.title_rps_list_disable
+                )
+            }
+        }
+        dicePref?.let {
+            it.title = if (sp.getBoolean(SETTINGS_GAME_DICE_FLAG, false)) {
+                getString(
+                    R.string.title_dice_list,
+                    sp.getInt(
+                        SETTINGS_GAME_DICE,
+                        0
+                    ) + 1
+                )
+            } else {
+                getString(
+                    R.string.title_dice_list_disable
+                )
+            }
+        }
+
     }
 
     companion object {
