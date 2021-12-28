@@ -17,9 +17,9 @@ import java.util.concurrent.ConcurrentHashMap
 object ListViewHider : HookerProvider {
 
     data class Section(
-            val start: Int,  // Inclusive
-            val end: Int,    // Exclusive
-            val base: Int
+        val start: Int,  // Inclusive
+        val end: Int,    // Exclusive
+        val base: Int
     ) {
         operator fun contains(index: Int) = (start <= index) && (index < end)
 
@@ -28,18 +28,18 @@ object ListViewHider : HookerProvider {
         fun split(index: Int): List<Section> {
             val length = index - base
             return listOf(
-                    Section(start, start + length, base),
-                    Section(start + length, end - 1, base + length + 1)
+                Section(start, start + length, base),
+                Section(start + length, end - 1, base + length + 1)
             ).filter { it.size() != 0 }
         }
     }
 
     data class Record(
-            // The variable sections records the sections of items we want to show
-            @Volatile var sections: List<Section>,
-            // The variable predicates records the predicates of the adapters.
-            // An item will be hidden if it satisfies any one of the predicates.
-            @Volatile var predicates: Map<String, Predicate>
+        // The variable sections records the sections of items we want to show
+        @Volatile var sections: List<Section>,
+        // The variable predicates records the predicates of the adapters.
+        // An item will be hidden if it satisfies any one of the predicates.
+        @Volatile var predicates: Map<String, Predicate>
     )
 
     private val records: MutableMap<BaseAdapter, Record> = ConcurrentHashMap()
@@ -77,27 +77,31 @@ object ListViewHider : HookerProvider {
         }
     }
 
-    override fun provideStaticHookers(): List<Hooker>? {
+    override fun provideStaticHookers(): List<Hooker> {
         return listOf(MMBaseAdapterHooker)
     }
 
     private val MMBaseAdapterHooker = Hooker {
         // Hook getItem() of base adapters
-        findAndHookMethod(MMBaseAdapter, MMBaseAdapter_getItemInternal, C.Int, object : XC_MethodHook() {
-            override fun beforeHookedMethod(param: MethodHookParam) {
-                val adapter = param.thisObject as BaseAdapter
-                val index = param.args[0] as Int
-                val record = records[adapter] ?: return
-                synchronized(record) {
-                    record.sections.forEach { section ->
-                        if (index in section) {
-                            param.args[0] = section.base + (index - section.start)
-                            return
+        findAndHookMethod(
+            MMBaseAdapter,
+            MMBaseAdapter_getItemInternal,
+            C.Int,
+            object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    val adapter = param.thisObject as BaseAdapter
+                    val index = param.args[0] as Int
+                    val record = records[adapter] ?: return
+                    synchronized(record) {
+                        record.sections.forEach { section ->
+                            if (index in section) {
+                                param.args[0] = section.base + (index - section.start)
+                                return
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
 
         // Hook getCount() of base adapters
         findAndHookMethod(MMBaseAdapter, "getCount", object : XC_MethodHook() {
@@ -106,7 +110,7 @@ object ListViewHider : HookerProvider {
                 val record = records[adapter] ?: return
                 synchronized(record) {
                     if (record.sections.isNotEmpty()) {
-                        param.result = record.sections.sumBy { it.size() }
+                        param.result = record.sections.sumOf { it.size() }
                     }
                 }
             }

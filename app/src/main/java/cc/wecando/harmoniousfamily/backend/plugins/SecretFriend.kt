@@ -4,11 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.BaseAdapter
 import android.widget.Toast
-import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND
 import cc.wecando.harmoniousfamily.Global.ITEM_ID_BUTTON_HIDE_FRIEND
+import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND
 import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND_HIDE_OPTION
 import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND_PASSWORD
 import cc.wecando.harmoniousfamily.R
@@ -16,13 +15,13 @@ import cc.wecando.harmoniousfamily.backend.WechatHook
 import cc.wecando.harmoniousfamily.backend.storage.Strings
 import cc.wecando.harmoniousfamily.backend.storage.database.MainDatabase.getContactByNickname
 import cc.wecando.harmoniousfamily.backend.storage.list.SecretFriendList
+import cc.wecando.harmoniousfamily.utils.PasswordUtil
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.AddressAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.hookers.ListViewHider
 import com.gh0u1l5.wechatmagician.spellbook.hookers.MenuAppender
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.*
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.chatting.Classes.ChattingUI
-import cc.wecando.harmoniousfamily.utils.PasswordUtil
 import de.robv.android.xposed.XposedHelpers.getObjectField
 
 object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenuHook,
@@ -34,28 +33,6 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
 
     private fun isPluginEnabled() = pref.getBoolean(SETTINGS_SECRET_FRIEND, true)
 
-    private fun changeUserStatusByUsername(context: Context, username: String?, isSecret: Boolean) {
-        if (username == null) {
-            val promptUserNotFound = Strings.getString(R.string.prompt_user_not_found)
-            Toast.makeText(context, promptUserNotFound, Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (isSecret) {
-            SecretFriendList += username
-        } else {
-            SecretFriendList -= username
-        }
-        AddressAdapterObject.get()?.notifyDataSetChanged()
-        ConversationAdapterObject.get()?.notifyDataSetChanged()
-    }
-
-    private fun changeUserStatusByNickname(context: Context, nickname: String?, isSecret: Boolean) {
-        if (nickname == null) {
-            return
-        }
-        val username = getContactByNickname(nickname)?.username
-        changeUserStatusByUsername(context, username, isSecret)
-    }
 
     private fun onAdapterCreated(adapter: BaseAdapter) {
         if (!isPluginEnabled()) {
@@ -71,7 +48,10 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
 
     override fun onConversationAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
 
-    // Hide the chatting windows for secret friends.
+    /**
+     * Hide the chatting windows for secret friends.
+     * 防止从朋友圈进入
+     */
     override fun onActivityStarting(activity: Activity) {
         if (!isPluginEnabled()) {
             return
@@ -86,6 +66,9 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
     }
 
+    /**
+     * 屏蔽通知
+     */
     override fun onMessageHandling(message: INotificationHook.Message): Boolean {
         if (!isPluginEnabled()) {
             return false
@@ -93,7 +76,9 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         return message.talker in SecretFriendList
     }
 
-    // Add menu items in the popup menu for contacts.
+    /**
+     * Add menu items in the popup menu for contacts.
+     */
     override fun onPopupMenuForContactsCreating(username: String): List<MenuAppender.PopupMenuItem>? {
         if (!isPluginEnabled()) {
             return null
@@ -166,4 +151,56 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
         return super.onHandleCommand(context, command)
     }
+
+    /**
+     * 根据微信 id 隐藏, 用于长按聊天 or 通讯录页面
+     */
+    private fun changeUserStatusByUsername(context: Context, username: String?, isSecret: Boolean) {
+        if (username == null) {
+            val promptUserNotFound = Strings.getString(R.string.prompt_user_not_found)
+            Toast.makeText(context, promptUserNotFound, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (isSecret) {
+            SecretFriendList += username
+        } else {
+            SecretFriendList -= username
+        }
+        AddressAdapterObject.get()?.notifyDataSetChanged()
+        ConversationAdapterObject.get()?.notifyDataSetChanged()
+    }
+
+    /**
+     * 根据 NickName 隐藏或者显示
+     */
+    private fun changeUserStatusByNickname(context: Context, nickname: String?, isSecret: Boolean) {
+        if (nickname == null) {
+            return
+        }
+        val username = getContactByNickname(nickname)?.username
+        changeUserStatusByUsername(context, username, isSecret)
+    }
+
+
+/*
+    通讯录 item
+    NON: null
+    field_alias: gzllovezxq520
+    field_conRemark:
+    field_deleteFlag: 0
+    field_descWording: null
+    field_descWordingId:
+    field_descWordingQuanpin: null
+    field_lvbuff: null
+    field_nickname: Aa房东直租-小郭
+    field_openImAppid:
+    field_remarkDesc:
+    field_showHead: 65
+    field_signature: 朋友圈所有房源全部真实 房东直租 不用中介费 随时看房
+    field_username: wxid_8gsagj481qgp22
+    field_verifyFlag: 0
+    field_weiboFlag:0
+
+*/
+
 }

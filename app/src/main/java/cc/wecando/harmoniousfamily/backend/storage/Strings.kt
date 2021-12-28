@@ -89,11 +89,11 @@ object Strings {
         }
         val language = pref.getString(SETTINGS_MODULE_LANGUAGE, language)
         if (language !in hardcodedStrings) {
-             Log.d("Xposed","Unknown Language: $language")
+            Log.d("Xposed", "Unknown Language: $language")
         }
         val strings = hardcodedStrings[language] ?: hardcodedStrings["en"]
         if (id !in strings!!) {
-             Log.d("Xposed","Unknown String ID: $id")
+            Log.d("Xposed", "Unknown String ID: $id")
         }
         return strings[id] ?: "???"
     }
