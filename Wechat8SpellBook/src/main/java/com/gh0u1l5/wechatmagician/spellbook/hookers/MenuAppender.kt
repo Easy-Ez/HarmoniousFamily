@@ -39,11 +39,11 @@ object MenuAppender : EventCenter() {
     @Volatile
     var currentMenuItems: List<PopupMenuItem>? = null
 
-    override fun provideStaticHookers(): List<Hooker>? {
+    override fun provideStaticHookers(): List<Hooker> {
         return listOf(onMMListPopupWindowShowHooker, onMMListPopupWindowDismissHooker)
     }
 
-    override fun provideEventHooker(event: String): Hooker? {
+    override fun provideEventHooker(event: String): Hooker {
         return when (event) {
             "onPopupMenuForContactsCreating" -> onPopupMenuForContactsCreateHooker
             "onPopupMenuForConversationsCreating" -> onPopupMenuForConversationsCreateHooker
@@ -109,13 +109,6 @@ object MenuAppender : EventCenter() {
                 }
             })
 
-        val method = findMethodExactIfExists(
-            AddressUI,
-            "onCreateContextMenu",
-            C.ContextMenu,
-            C.View,
-            C.ContextMenuInfo
-        )
 
         findAndHookMethod(
             AddressUI, "onCreateContextMenu",

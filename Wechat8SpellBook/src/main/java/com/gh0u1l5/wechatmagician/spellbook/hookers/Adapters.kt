@@ -12,7 +12,6 @@ import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Cla
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 
 object Adapters : EventCenter() {
