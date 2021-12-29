@@ -19,6 +19,7 @@ object C {
     val Map = Map::class.java
     val Object = Object::class.java
     val String = String::class.java
+    val List = List::class.java
     val Throwable = Throwable::class.java
 
     val Activity = android.app.Activity::class.java

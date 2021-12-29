@@ -179,6 +179,21 @@ class Classes(private val classes: List<Class<*>>) {
             }
         })
     }
+    /**
+     * 过滤出是非抽象类
+     */
+    fun filterIsNotAbsClass(): Classes {
+        return Classes(classes.filter { clazz ->
+            !Modifier.isAbstract (clazz.modifiers)
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(
+                    TAG,
+                    "filterAnonymousClass found nothing"
+                )
+            }
+        })
+    }
 
     /**
      * 过滤出是接口的类

@@ -12,6 +12,19 @@ object Classes {
             WechatGlobal.wxLoader!!
         )
     }
+    val WxViewHolder: Class<*> by WechatGlobal.wxLazy("WxViewHolder", Versions.v8_0_16) {
+        ReflectionUtil.findClassesFromPackage(
+            WechatGlobal.wxLoader!!,
+            WechatGlobal.wxClasses!!,
+            "${WechatGlobal.wxPackageName}.view.recyclerview"
+        )
+            .filterByMethod(
+                WechatGlobal.wxLoader!!.loadClass("androidx.recyclerview.widget.RecyclerView"),
+                "getRecyclerView"
+            )
+            .filterIsNotAbsClass()
+            .firstOrNull()
+    }
 
     val ConvertData: Class<*> by WechatGlobal.wxLazy("ConvertData", Versions.v8_0_16) {
         ReflectionUtil.findClassesFromPackage(

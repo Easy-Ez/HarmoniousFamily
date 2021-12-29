@@ -9,6 +9,8 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_16
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classes.ContactInfo
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.ConvertData
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.WxViewHolder
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExists
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
@@ -40,6 +42,24 @@ object Classes {
     val AddressLiveListItem: Class<*> by wxLazy("AddressLiveListItem", v8_0_16) {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact.address")
             .filterByFieldType(ContactInfo)
+            .firstOrNull()
+    }
+
+    /**
+     * 通讯录 ItemType 转换器
+     * a(j jVar, d dVar, int i, int i2, boolean z, List list)
+     */
+    val AddressItemConvert: Class<*> by wxLazy("AddressItemConvert", v8_0_16) {
+        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact.address")
+            .filterByMethod(
+                null,
+                WxViewHolder,
+                ConvertData,
+                C.Int,
+                C.Int,
+                C.Boolean,
+                C.List
+            )
             .firstOrNull()
     }
 
