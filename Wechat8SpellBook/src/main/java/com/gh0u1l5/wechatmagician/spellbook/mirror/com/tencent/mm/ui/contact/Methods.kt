@@ -5,9 +5,11 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.mvvmlist.Classes.MvvmRecyclerAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressItemConvert
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressUI
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.ContactLongClickListener
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.OnCreateContextMenuListener
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.ConvertData
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodsByExactParameters
@@ -38,6 +40,21 @@ object Methods {
         findMethodsByExactParameters(
             AddressUI,
             MvvmRecyclerAdapter,
+        ).firstOrNull()
+    }
+    val AddressItemConvert_onBindViewHolder: Method by wxLazy(
+        "AddressItemConvert_onBindViewHolder",
+        Versions.v8_0_16
+    ) {
+        findMethodsByExactParameters(
+            AddressItemConvert,
+            null,
+            Classes.WxViewHolder,
+            ConvertData,
+            C.Int,
+            C.Int,
+            C.Boolean,
+            C.List
         ).firstOrNull()
     }
 
