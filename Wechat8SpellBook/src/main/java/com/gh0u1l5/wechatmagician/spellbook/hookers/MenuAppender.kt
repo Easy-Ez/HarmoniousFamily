@@ -8,16 +8,20 @@ import android.view.View
 import android.widget.AdapterView
 import com.gh0u1l5.wechatmagician.spellbook.BuildConfig
 import com.gh0u1l5.wechatmagician.spellbook.C
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IPopupMenuHook
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classes
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.base.Classes.MMListPopupWindow
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressUI
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.ContactLongClickListener
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.ContactLongClickListener_onCreateContextMenu
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationCreateContextMenuListener
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationLongClickListener
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge.hookMethod
 import de.robv.android.xposed.XposedHelpers.*
 
 object MenuAppender : EventCenter() {
@@ -83,16 +87,39 @@ object MenuAppender : EventCenter() {
         })
     }
 
+    /**
+     * 拦截通讯录的 PopupMenu 创建, 获取 currentUsername
+     */
     private val onPopupMenuForContactsCreateHooker = Hooker {
-        findAndHookMethod(
-            ContactLongClickListener, "onItemLongClick",
-            C.AdapterView, C.View, C.Int, C.Long, object : XC_MethodHook() {
+        hookMethod(
+            Methods.ContactLongClickListener_onItemLongClick, object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
-                    val parent = param.args[0] as AdapterView<*>
-                    val position = param.args[2] as Int
-                    val item = parent.adapter?.getItem(position)
+                    handleItemLongClick(param)
+                }
+
+                /**
+                 * 拦截通讯录长按事件, 获取当前 item 的 userName
+                 */
+                private fun handleItemLongClick(param: MethodHookParam) {
+                    val contactInfo = if (WechatGlobal.wxVersion!! >= Versions.v8_0_16) {
+                        val itemView = param.args[0] as View?
+                        val item = param.args[1]
+                        val position = param.args[2] as Int
+                        Log.d(
+                            "Xposed-secret",
+                            "onItemLongClick position:${position};itemView: $itemView"
+                        )
+                        val contactInfoField =
+                            findFirstFieldByExactType(item::class.java, Classes.ContactInfo)
+                        contactInfoField.get(item)
+                    } else {
+                        val parent = param.args[0] as AdapterView<*>
+                        val position = param.args[2] as Int
+                        val item = parent.adapter?.getItem(position)
+                        item
+                    }
                     if (BuildConfig.DEBUG)
-                        item?.let { addressUIContactItem ->
+                        contactInfo?.let { addressUIContactItem ->
                             addressUIContactItem::class.java.declaredFields.forEach { filed ->
                                 filed.isAccessible = true
                                 Log.d(
@@ -105,18 +132,22 @@ object MenuAppender : EventCenter() {
                                 )
                             }
                         }
-                    currentUsername = getObjectField(item, "field_username") as String?
+                    currentUsername = getObjectField(contactInfo, "field_username") as String?
+                    Log.d(
+                        "Xposed-secret", "currentUsername:${currentUsername}"
+                    )
+
                 }
             })
 
 
-        findAndHookMethod(
-            AddressUI, "onCreateContextMenu",
-            C.ContextMenu, C.View, C.ContextMenuInfo, object : XC_MethodHook() {
+
+
+        hookMethod(
+            ContactLongClickListener_onCreateContextMenu, object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val menu = param.args[0] as ContextMenu
                     val view = param.args[1] as View
-
                     currentMenuItems =
                         notifyForResults("onPopupMenuForContactsCreating") { plugin ->
                             (plugin as IPopupMenuHook).onPopupMenuForContactsCreating(
@@ -137,6 +168,9 @@ object MenuAppender : EventCenter() {
         WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_CONTACT_POPUP)
     }
 
+    /**
+     * 拦截聊天列表的 PopupMenu 创建
+     */
     private val onPopupMenuForConversationsCreateHooker = Hooker {
         findAndHookMethod(
             ConversationLongClickListener, "onItemLongClick",
