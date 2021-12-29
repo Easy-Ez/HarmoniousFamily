@@ -11,6 +11,8 @@ import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.ref.WeakReference
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 /**
  * 用于记录所有关于 Wechat 的关键全局变量
@@ -33,7 +35,8 @@ object WechatGlobal {
      *
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
-    @Volatile var wxVersion: Version? = null
+    @Volatile
+    var wxVersion: Version? = null
         get() {
             if (!wxUnitTestMode) {
                 initChannel.wait(INIT_TIMEOUT)
@@ -47,7 +50,8 @@ object WechatGlobal {
      *
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
-    @Volatile var wxPackageName: String = ""
+    @Volatile
+    var wxPackageName: String = ""
         get() {
             if (!wxUnitTestMode) {
                 initChannel.wait(INIT_TIMEOUT)
@@ -61,7 +65,8 @@ object WechatGlobal {
      *
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
-    @Volatile var wxLoader: ClassLoader? = null
+    @Volatile
+    var wxLoader: ClassLoader? = null
         get() {
             if (!wxUnitTestMode) {
                 initChannel.wait(INIT_TIMEOUT)
@@ -75,7 +80,8 @@ object WechatGlobal {
      *
      * 如果初始化还未完成的话, 访问该对象的线程会自动阻塞 [INIT_TIMEOUT] ms
      */
-    @Volatile var wxClasses: ClassTrie? = null
+    @Volatile
+    var wxClasses: ClassTrie? = null
         get() {
             if (!wxUnitTestMode) {
                 initChannel.wait(INIT_TIMEOUT)
@@ -87,16 +93,30 @@ object WechatGlobal {
     /**
      * 单元测试模式的开关, 只应该在单元测试中打开
      */
-    @Volatile var wxUnitTestMode: Boolean = false
+    @Volatile
+    var wxUnitTestMode: Boolean = false
 
     // 缓存一些重要的微信全局对象
-    @Volatile var AddressAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
-    @Volatile var ConversationAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
-    @Volatile var SnsUserUIAdapterObject: WeakReference<Adapter?> = WeakReference(null)
-    @Volatile var MsgStorageObject: Any? = null
-    @Volatile var ImgStorageObject: Any? = null
-    @Volatile var MainDatabaseObject: Any? = null
-    @Volatile var SnsDatabaseObject: Any? = null
+    @Volatile
+    var AddressAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
+
+    @Volatile
+    var ConversationAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
+
+    @Volatile
+    var SnsUserUIAdapterObject: WeakReference<Adapter?> = WeakReference(null)
+
+    @Volatile
+    var MsgStorageObject: Any? = null
+
+    @Volatile
+    var ImgStorageObject: Any? = null
+
+    @Volatile
+    var MainDatabaseObject: Any? = null
+
+    @Volatile
+    var SnsDatabaseObject: Any? = null
 
     /**
      * 创建一个惰性求值对象, 只有被用到的时候才会自动求值
@@ -104,31 +124,61 @@ object WechatGlobal {
      * 当单元测试模式开启的时候, 会使用不同的 Lazy Implementation 辅助测试
      *
      * @param name 对象名称, 打印错误日志的时候会用到
+     * @param initialVersion 大于等于指定版本才需要初始化
      * @param initializer 用来求值的回调函数
      */
-    inline fun <T> wxLazy(name: String, crossinline initializer: () -> T?): Lazy<T> {
+    inline fun <reified T> wxLazy(
+        name: String,
+        initialVersion: Version? = null,
+        crossinline initializer: () -> T?
+    ): Lazy<T> {
+        val clazz = T::class.java
         return if (wxUnitTestMode) {
             UnitTestLazyImpl {
-                initializer() ?: throw Error("Failed to evaluate $name")
+                if (initialVersion == null || wxVersion!! >= initialVersion) {
+                    initializer() ?: throw Error("Failed to evaluate $name")
+                } else {
+                    createDefaultValueForUnusedVersion(clazz)
+                }
             }
         } else {
+
             lazy(LazyThreadSafetyMode.PUBLICATION) {
                 when (null) {
-                    wxVersion     -> throw Error("Invalid wxVersion")
+                    wxVersion -> throw Error("Invalid wxVersion")
                     wxPackageName -> throw Error("Invalid wxPackageName")
-                    wxLoader      -> throw Error("Invalid wxLoader")
-                    wxClasses     -> throw Error("Invalid wxClasses")
+                    wxLoader -> throw Error("Invalid wxLoader")
+                    wxClasses -> throw Error("Invalid wxClasses")
                 }
-                initializer() ?: throw Error("Failed to evaluate $name")
+                if (initialVersion == null || wxVersion!! >= initialVersion) {
+                    initializer() ?: throw Error("Failed to evaluate $name")
+                } else {
+                    createDefaultValueForUnusedVersion(clazz)
+                }
+
             }
         }
     }
 
+    val unUsedMethod: Method = Any::class.java.methods[0]
+    val unUsedClazz = Any::class.java
+    val unUsedField: Field = StringBuffer::class.java.declaredFields[0]
+
+    /**
+     * 某些版本不需要初始化, 这里返回一个默认值
+     */
+    inline fun <reified T> createDefaultValueForUnusedVersion(clazz: Class<T>): T {
+        return (if (clazz == Method::class.java) unUsedMethod else if (clazz == Field::class.java) unUsedField else unUsedClazz) as T
+    }
+
+
     /**
      * 用来帮助单元测试的一个 Lazy Implementation, 允许开发者多次初始化一个惰性求值对象
      */
-    class UnitTestLazyImpl<out T>(private val initializer: () -> T): Lazy<T>, java.io.Serializable {
-        @Volatile private var lazyValue: Lazy<T> = lazy(initializer)
+    class UnitTestLazyImpl<out T>(private val initializer: () -> T) : Lazy<T>,
+        java.io.Serializable {
+        @Volatile
+        private var lazyValue: Lazy<T> = lazy(initializer)
 
         fun refresh() {
             lazyValue = lazy(initializer)
@@ -148,7 +198,8 @@ object WechatGlobal {
      * @param lpparam 通过重载 [IXposedHookLoadPackage.handleLoadPackage] 方法拿到的
      * [XC_LoadPackage.LoadPackageParam] 对象
      */
-    @JvmStatic fun init(lpparam: XC_LoadPackage.LoadPackageParam) {
+    @JvmStatic
+    fun init(lpparam: XC_LoadPackage.LoadPackageParam) {
         tryAsynchronously {
             if (initChannel.isDone()) {
                 return@tryAsynchronously
