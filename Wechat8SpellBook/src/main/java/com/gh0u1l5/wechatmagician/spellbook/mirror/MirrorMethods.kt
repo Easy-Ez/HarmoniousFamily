@@ -13,5 +13,6 @@ val MirrorMethods = listOf(
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Methods,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Methods,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Methods,
+    com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.transmit.Methods
 )

@@ -13,6 +13,7 @@ val MirrorClasses = listOf(
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.base.stub.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.emoji.model.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.gallery.ui.Classes,
+    com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.mvvmlist.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.remittance.ui.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.sns.ui.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.webwx.ui.Classes,
@@ -26,6 +27,7 @@ val MirrorClasses = listOf(
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.tools.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.transmit.Classes,
+    com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.database.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.wcdb.support.Classes
