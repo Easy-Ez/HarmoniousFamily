@@ -1,16 +1,12 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
-import android.widget.BaseAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.data.Record
-import com.gh0u1l5.wechatmagician.spellbook.data.Section
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Classes
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Methods
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.mvvmlist.Classes.MvvmRecyclerAdapter
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers
 import java.util.concurrent.ConcurrentHashMap
@@ -62,59 +58,7 @@ object RecyclerViewHider : HookerProvider {
     }
 
     private val MMBaseAdapterHooker = Hooker {
-        // Hook getItem() of base adapters
-        XposedHelpers.findAndHookMethod(
-            Classes.MMBaseAdapter,
-            Methods.MMBaseAdapter_getItemInternal,
-            C.Int,
-            object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    val adapter = param.thisObject as BaseAdapter
-                    val index = param.args[0] as Int
-                    val record = ListViewHider.records[adapter] ?: return
-                    synchronized(record) {
-                        record.sections.forEach { section ->
-                            if (index in section) {
-                                param.args[0] = section.base + (index - section.start)
-                                return
-                            }
-                        }
-                    }
-                }
-            })
-
-        // Hook getCount() of base adapters
-        XposedHelpers.findAndHookMethod(
-            Classes.MMBaseAdapter,
-            "getCount",
-            object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    val adapter = param.thisObject as BaseAdapter
-                    val record = ListViewHider.records[adapter] ?: return
-                    synchronized(record) {
-                        if (record.sections.isNotEmpty()) {
-                            param.result = record.sections.sumOf { it.size() }
-                        }
-                    }
-                }
-            })
-
-        // Hook notifyDataSetChanged() of base adapters
-        XposedHelpers.findAndHookMethod(
-            C.BaseAdapter,
-            "notifyDataSetChanged",
-            object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    when (param.thisObject::class.java) {
-                        com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter -> {
-                            updateAdapterSections(param)
-                        }
-                        com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter -> {
-                            updateAdapterSections(param)
-                        }
-                    }
-                }
-            })
+        XposedHelpers.findAndHookMethod(MvvmRecyclerAdapter,"",)
 
         WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_RV_ADAPTER)
     }
