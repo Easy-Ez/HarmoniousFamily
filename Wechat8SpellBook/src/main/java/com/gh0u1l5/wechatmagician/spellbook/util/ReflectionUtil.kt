@@ -243,6 +243,13 @@ object ReflectionUtil {
         }
     }
 
+    @JvmStatic
+    fun findFieldsWithType(clazz: Class<*>, filedTypeClass: Class<*>): List<Field> {
+        return clazz.declaredFields.filter {
+            it.type == filedTypeClass
+        }
+    }
+
     /**
      * 查找指定类中所有特定类型的静态成员变量
      */
