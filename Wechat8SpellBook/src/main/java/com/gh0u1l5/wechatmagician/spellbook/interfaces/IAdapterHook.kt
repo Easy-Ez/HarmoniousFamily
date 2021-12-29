@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.BaseAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
 
@@ -15,7 +16,13 @@ interface IAdapterHook {
      *
      * @param adapter the created AddressAdapter object.
      */
-    fun onAddressAdapterCreated(adapter: BaseAdapter) { }
+    fun onAddressAdapterCreated(adapter: BaseAdapter) {}
+
+    /**
+     * todo 更新注释
+     * 从 版本开始, 通讯录列表换成了 RecyclerView 实现, 因此创建的 Adapter 也需要变更下
+     */
+    fun onAddressAdapterCreated(adapter: RecyclerView.Adapter<*>) {}
 
     /**
      * Called when a Wechat ConversationAdapter has been created. This adapter will be used in the
@@ -23,7 +30,7 @@ interface IAdapterHook {
      *
      * @param adapter the created ConversationAdapter object.
      */
-    fun onConversationAdapterCreated(adapter: BaseAdapter) { }
+    fun onConversationAdapterCreated(adapter: BaseAdapter) {}
 
     /**
      * Called when an HeaderViewListAdapter object is going to invoke [Adapter.getView] method.
@@ -35,7 +42,12 @@ interface IAdapterHook {
      * @return to bypass the original method, return a View object wrapped by [Operation.replacement]
      * or a throwable wrapped by [Operation.interruption], otherwise return [Operation.nop].
      */
-    fun onHeaderViewListAdapterGettingView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup): Operation<View> = nop()
+    fun onHeaderViewListAdapterGettingView(
+        adapter: Any,
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup
+    ): Operation<View> = nop()
 
     /**
      * Called when an HeaderViewListAdapter object has returned from [Adapter.getView] method.
@@ -48,5 +60,11 @@ interface IAdapterHook {
      * @return to replace the original result, return a View object wrapped by [Operation.replacement],
      * otherwise return [Operation.nop].
      */
-    fun onHeaderViewListAdapterGotView(adapter: Any, position: Int, convertView: View?, parent: ViewGroup, result: View?): Operation<View> = nop()
+    fun onHeaderViewListAdapterGotView(
+        adapter: Any,
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+        result: View?
+    ): Operation<View> = nop()
 }

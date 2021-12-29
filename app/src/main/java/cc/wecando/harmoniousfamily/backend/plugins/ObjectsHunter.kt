@@ -1,10 +1,11 @@
 package cc.wecando.harmoniousfamily.backend.plugins
 
 import android.content.ContentValues
-import android.util.Log
 import android.widget.BaseAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.AddressAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObject
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObjectNew
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ImgStorageObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.MainDatabaseObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.MsgStorageObject
@@ -37,6 +38,10 @@ object ObjectsHunter : IActivityHook, IAdapterHook, IDatabaseHook, IMessageStora
 
     override fun onConversationAdapterCreated(adapter: BaseAdapter) {
         ConversationAdapterObject = WeakReference(adapter)
+    }
+
+    override fun onAddressAdapterCreated(adapter: RecyclerView.Adapter<*>) {
+        ConversationAdapterObjectNew = WeakReference(adapter)
     }
 
     override fun onDatabaseOpened(
