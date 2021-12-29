@@ -3,7 +3,7 @@ package com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformt
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Classes.Utils
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Classes.XmlParser
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodExact
@@ -22,7 +22,7 @@ object Methods {
 
     private fun getParseMethod(): Method? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_1 -> {
                 findMethodsByExactParameters(
                     XmlParser,
                     C.Map,

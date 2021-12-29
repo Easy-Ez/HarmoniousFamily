@@ -6,7 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
@@ -32,7 +32,7 @@ object Classes {
      */
     private fun getMsgInfoByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_6 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.storage")
                     .filterAnonymousClass()
 //                    .filterByValueOfStaticField("voip_content_voice")

@@ -4,7 +4,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
@@ -15,7 +15,7 @@ object Classes {
 
     private fun getNotificationManagerCompatByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.6") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_6 -> {
                 // v4切换成 androidx 兼容包
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "androidx.core.app")
                     .filterByField("android.app.NotificationManager")

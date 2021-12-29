@@ -6,7 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxVersion
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
@@ -16,7 +16,7 @@ object Classes {
 
     private fun getEncEngineByRules(): Class<*>? {
         return when {
-            wxVersion!! >= Version("8.0.1") -> {
+            wxVersion!! >= Versions.v8_0_1 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.modelsfs")
                     .filterByConstructor(C.Long)
                     .filterByConstructor(C.String)

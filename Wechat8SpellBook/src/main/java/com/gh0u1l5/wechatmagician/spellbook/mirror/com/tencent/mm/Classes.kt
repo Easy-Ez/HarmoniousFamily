@@ -7,7 +7,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Classes.LruCache
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
@@ -26,7 +26,7 @@ object Classes {
 
     private fun getImgInfoStorageByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_1 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                     .filterAnonymousClass()
                     .filterByMethod(
@@ -54,7 +54,7 @@ object Classes {
 
     private fun getLruCacheWithListenerByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_1 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, wxPackageName, 1)
                     .filterBySuper(LruCache)
                     .filterByInterfaceCount(1)

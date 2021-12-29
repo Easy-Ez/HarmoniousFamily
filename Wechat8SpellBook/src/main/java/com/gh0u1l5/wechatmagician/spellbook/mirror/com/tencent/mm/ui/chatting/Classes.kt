@@ -6,8 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.sdk.platformtools.Classes
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Classes.MMFragmentActivity
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
@@ -23,7 +22,7 @@ object Classes {
      */
     private fun getChattingUIByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.16") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_16 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.chatting")
                     .filterAnonymousClass()
                     .filterBySuper(MMFragmentActivity, 2)
@@ -36,7 +35,7 @@ object Classes {
                     )
                     .firstOrNull()
             }
-            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_1 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.chatting")
                     .filterAnonymousClass()
                     .filterBySuper(MMFragmentActivity, 1)

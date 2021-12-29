@@ -6,7 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
-import com.gh0u1l5.wechatmagician.spellbook.base.Version
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_1
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
@@ -39,7 +39,7 @@ object Classes {
 
     private fun getXmlParserByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Version("8.0.1") -> {
+            WechatGlobal.wxVersion!! >= v8_0_1-> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.sdk.platformtools")
                     .filterByMethod(C.Map, C.String, C.String, C.String)
                     .firstOrNull()
