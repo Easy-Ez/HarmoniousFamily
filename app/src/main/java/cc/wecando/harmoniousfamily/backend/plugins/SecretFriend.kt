@@ -1,11 +1,14 @@
 package cc.wecando.harmoniousfamily.backend.plugins
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.BaseAdapter
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import cc.wecando.harmoniousfamily.Global.ITEM_ID_BUTTON_HIDE_FRIEND
 import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND
 import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND_HIDE_OPTION
@@ -18,6 +21,7 @@ import cc.wecando.harmoniousfamily.backend.storage.list.SecretFriendList
 import cc.wecando.harmoniousfamily.utils.PasswordUtil
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.AddressAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObject
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObjectNew
 import com.gh0u1l5.wechatmagician.spellbook.hookers.ListViewHider
 import com.gh0u1l5.wechatmagician.spellbook.hookers.MenuAppender
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.*
@@ -33,6 +37,9 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
 
     private fun isPluginEnabled() = pref.getBoolean(SETTINGS_SECRET_FRIEND, true)
 
+    override fun onAddressAdapterCreated(adapter: RecyclerView.Adapter<*>) {
+        super.onAddressAdapterCreated(adapter)
+    }
 
     private fun onAdapterCreated(adapter: BaseAdapter) {
         if (!isPluginEnabled()) {
@@ -46,6 +53,7 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
 
     override fun onAddressAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
 
+
     override fun onConversationAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
 
     /**
@@ -56,11 +64,20 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         if (!isPluginEnabled()) {
             return
         }
+        Log.d("Xposed-secret", "${activity::class.java}")
         if (activity::class.java == ChattingUI) {
+            val extras = activity.intent.extras
+            extras?.let {
+                for (key in it.keySet()) {
+                    Log.d("Xposed-secret", "key:${key};value:${it.get(key)}")
+                }
+            }
+
             val username = activity.intent.getStringExtra("Chat_User")
             if (username in SecretFriendList) {
                 val promptUserNotFound = Strings.getString(R.string.prompt_user_not_found)
                 Toast.makeText(activity, promptUserNotFound, Toast.LENGTH_SHORT).show()
+                // fix me 这里高版本会报错
                 activity.finish()
             }
         }
@@ -155,6 +172,7 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
     /**
      * 根据微信 id 隐藏, 用于长按聊天 or 通讯录页面
      */
+    @SuppressLint("NotifyDataSetChanged")
     private fun changeUserStatusByUsername(context: Context, username: String?, isSecret: Boolean) {
         if (username == null) {
             val promptUserNotFound = Strings.getString(R.string.prompt_user_not_found)
@@ -168,6 +186,7 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
         AddressAdapterObject.get()?.notifyDataSetChanged()
         ConversationAdapterObject.get()?.notifyDataSetChanged()
+        ConversationAdapterObjectNew.get()?.notifyDataSetChanged()
     }
 
     /**
