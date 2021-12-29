@@ -141,6 +141,16 @@ class Classes(private val classes: List<Class<*>>) {
         })
     }
 
+    fun filterByFieldType(fieldType: Class<*>): Classes {
+        return Classes(classes.filter { clazz ->
+            findFieldsWithType(clazz, fieldType).isNotEmpty()
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(TAG, "filterByField found nothing, fieldType = $fieldType")
+            }
+        })
+    }
+
     fun filterAnonymousClass(): Classes {
         return Classes(classes.filter { clazz ->
             !clazz.isAnonymousClass
@@ -149,6 +159,54 @@ class Classes(private val classes: List<Class<*>>) {
                 Log.w(
                     TAG,
                     "filterAnonymousClass found nothing"
+                )
+            }
+        })
+    }
+
+    /**
+     * 过滤出是匿名内部类
+     */
+    fun filterIsAnonymousClass(): Classes {
+        return Classes(classes.filter { clazz ->
+            clazz.isAnonymousClass
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(
+                    TAG,
+                    "filterAnonymousClass found nothing"
+                )
+            }
+        })
+    }
+
+    /**
+     * 过滤出是接口的类
+     */
+    fun filterIsInterface(): Classes {
+        return Classes(classes.filter { clazz ->
+            clazz.isInterface
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(
+                    TAG,
+                    "filterIsInterface found nothing"
+                )
+            }
+        })
+    }
+
+    /**
+     * 过滤出类中定义的方法满足给定数量的类
+     */
+    fun filterByDeclaredMethodCount(count: Int): Classes {
+        return Classes(classes.filter { clazz ->
+            clazz.declaredMethods.size == count
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(
+                    TAG,
+                    "filterByDeclaredMethodCount found nothing"
                 )
             }
         })
