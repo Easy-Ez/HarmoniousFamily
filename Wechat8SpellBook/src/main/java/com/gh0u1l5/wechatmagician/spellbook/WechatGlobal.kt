@@ -2,6 +2,7 @@ package com.gh0u1l5.wechatmagician.spellbook
 
 import android.widget.Adapter
 import android.widget.BaseAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.SpellBook.getApplicationVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
@@ -102,6 +103,12 @@ object WechatGlobal {
 
     @Volatile
     var ConversationAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
+
+    /**
+     * 新版本微信通讯录使用 RecyclerView 实现
+     */
+    @Volatile
+    var ConversationAdapterObjectNew: WeakReference<RecyclerView.Adapter<*>?> = WeakReference(null)
 
     @Volatile
     var SnsUserUIAdapterObject: WeakReference<Adapter?> = WeakReference(null)
