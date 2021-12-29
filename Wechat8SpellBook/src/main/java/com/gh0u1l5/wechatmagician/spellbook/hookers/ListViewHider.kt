@@ -6,6 +6,8 @@ import com.gh0u1l5.wechatmagician.spellbook.Predicate
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
+import com.gh0u1l5.wechatmagician.spellbook.data.Record
+import com.gh0u1l5.wechatmagician.spellbook.data.Section
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Classes.MMBaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Methods.MMBaseAdapter_getItemInternal
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
@@ -16,33 +18,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ListViewHider : HookerProvider {
 
-    data class Section(
-        val start: Int,  // Inclusive
-        val end: Int,    // Exclusive
-        val base: Int
-    ) {
-        operator fun contains(index: Int) = (start <= index) && (index < end)
 
-        fun size() = end - start
-
-        fun split(index: Int): List<Section> {
-            val length = index - base
-            return listOf(
-                Section(start, start + length, base),
-                Section(start + length, end - 1, base + length + 1)
-            ).filter { it.size() != 0 }
-        }
-    }
-
-    data class Record(
-        // The variable sections records the sections of items we want to show
-        @Volatile var sections: List<Section>,
-        // The variable predicates records the predicates of the adapters.
-        // An item will be hidden if it satisfies any one of the predicates.
-        @Volatile var predicates: Map<String, Predicate>
-    )
-
-    private val records: MutableMap<BaseAdapter, Record> = ConcurrentHashMap()
+    val records: MutableMap<BaseAdapter, Record> = ConcurrentHashMap()
 
     fun register(adapter: BaseAdapter, predicateName: String, predicateBody: Predicate) {
         val record = records[adapter]
