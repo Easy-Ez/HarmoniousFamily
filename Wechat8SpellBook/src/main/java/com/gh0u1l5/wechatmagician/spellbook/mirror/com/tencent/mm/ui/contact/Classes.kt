@@ -10,7 +10,7 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_16
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classes.ContactInfo
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.ConvertData
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.WxViewHolder
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.SimpleViewHolder
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExists
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
@@ -53,7 +53,7 @@ object Classes {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact.address")
             .filterByMethod(
                 null,
-                WxViewHolder,
+                SimpleViewHolder,
                 ConvertData,
                 C.Int,
                 C.Int,
@@ -99,7 +99,7 @@ object Classes {
                     "$wxPackageName.ui.contact.address"
                 )
                     .filterIsAnonymousClass()
-                    .filterByMethod(C.Boolean, C.View, Classes.ConvertData, C.Int)
+                    .filterByMethod(C.Boolean, C.View, ConvertData, C.Int)
                     .firstOrNull()
             }
             else -> {

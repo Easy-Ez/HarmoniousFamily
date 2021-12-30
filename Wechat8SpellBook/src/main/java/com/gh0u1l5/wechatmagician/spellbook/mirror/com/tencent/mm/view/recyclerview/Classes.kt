@@ -12,7 +12,8 @@ object Classes {
             WechatGlobal.wxLoader!!
         )
     }
-    val WxViewHolder: Class<*> by WechatGlobal.wxLazy("WxViewHolder", Versions.v8_0_16) {
+
+    val SimpleViewHolder: Class<*> by WechatGlobal.wxLazy("SimpleViewHolder", Versions.v8_0_16) {
         ReflectionUtil.findClassesFromPackage(
             WechatGlobal.wxLoader!!,
             WechatGlobal.wxClasses!!,
@@ -23,6 +24,23 @@ object Classes {
                 "getRecyclerView"
             )
             .filterIsNotAbsClass()
+            .firstOrNull()
+    }
+
+    /**
+     * 用于寻找 WxRecyclerAdapter#onBindViewHolder 方法,
+     */
+    val FixedViewInfo: Class<*> by WechatGlobal.wxLazy(
+        "RecyclerViewAdapterEx\$FixedViewInfo",
+        Versions.v8_0_16
+    ) {
+        ReflectionUtil.findClassesFromPackage(
+            WechatGlobal.wxLoader!!,
+            WechatGlobal.wxClasses!!,
+            "${WechatGlobal.wxPackageName}.view.recyclerview"
+        )
+            .filterIsAbsAndStaticClass()
+            .filterByImplement(ConvertData)
             .firstOrNull()
     }
 

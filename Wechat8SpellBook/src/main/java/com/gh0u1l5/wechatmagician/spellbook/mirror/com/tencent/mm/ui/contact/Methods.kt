@@ -49,7 +49,7 @@ object Methods {
         findMethodsByExactParameters(
             AddressItemConvert,
             null,
-            Classes.WxViewHolder,
+            Classes.SimpleViewHolder,
             ConvertData,
             C.Int,
             C.Int,
