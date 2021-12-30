@@ -1,16 +1,16 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
-import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.data.Record
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Methods.WxRecyclerAdapter_getOnItemConvertClickListener
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedHelpers
+import de.robv.android.xposed.XposedBridge
 import java.util.concurrent.ConcurrentHashMap
 
 object RecyclerViewHider : HookerProvider {
@@ -32,27 +32,6 @@ object RecyclerViewHider : HookerProvider {
         }
     }
 
-    private fun updateAdapterSections(param: XC_MethodHook.MethodHookParam) {
-        val adapter = param.thisObject as RecyclerView.Adapter<*>
-        val record = records[adapter] ?: return
-        synchronized(record) {
-//            record.sections = emptyList()
-//            val initial = listOf(Section(0, adapter.itemCount, 0))
-//            val predicates = record.predicates.values
-//            record.sections = (0 until adapter.itemCount).filter { index ->
-//                // Hide the items satisfying any one of the predicates
-//                val item = adapter.getItem(index)
-//                predicates.forEach { predicate ->
-//                    if (predicate(item)) {
-//                        return@filter true
-//                    }
-//                }
-//                return@filter false
-//            }.fold(initial) { sections, index ->
-//                sections.dropLast(1) + sections.last().split(index)
-//            }
-        }
-    }
 
 
     override fun provideStaticHookers(): List<Hooker> {
@@ -65,32 +44,50 @@ object RecyclerViewHider : HookerProvider {
          *  bindViewHolder 时候, 会通过  ItemConvertFactory 取 ItemConvert
          *  这里拦截 ItemConvert 的 onBindViewHolder 方法
          */
-        XposedHelpers.findAndHookMethod("com.tencent.mm.view.recyclerview.f",
-            WechatGlobal.wxLoader,
-            "a",
-            Classes.WxViewHolder,
-            Classes.ConvertData,
-            C.Int,
-            C.Int,
-            C.Boolean,
-            C.List,
+        XposedBridge.hookMethod(
+            WxRecyclerAdapter_getOnItemConvertClickListener,
             object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam?) {
                     super.afterHookedMethod(param)
                     param?.let {
-                        val simpleViewHolder = param.args[0]
+                        val itemView = param.args[0] as View
                         val item = param.args[1]
-                        val position = param.args[2]
-                        val itemType = param.args[3]
-                        val isHotPatch = param.args[4]
+                        val positionForList = param.args[2] as Int
                         Log.d(
                             "Xposed-convert",
-                            "AddressItemConvert ,vh:${simpleViewHolder};item:${item};position:${position}itemType:${itemType}"
+                            "AddressItemConvert ,itemView:${itemView};item:${item};positionForList:${positionForList}"
                         )
+                        toggleItemVisible(itemView, item, positionForList)
                     }
 
                 }
+
+                private fun toggleItemVisible(itemView: View, item: Any?, positionForList: Int) {
+                    if (positionForList != -1) {
+                        // todo 这里插入判断  VISIBLE or GONE 逻辑
+                        val visible = records[Any()]?.predicates?.values?.any { it(item) } ?: true
+
+                        itemView.visibility = if (visible) View.VISIBLE else View.GONE
+                        val params = itemView.layoutParams as ViewGroup.LayoutParams
+                        Log.d(
+                            "Xposed-convert",
+                            "params ${params.height}"
+                        )
+                        if (visible) {
+                            params.height =
+                                ViewGroup.LayoutParams.WRAP_CONTENT // 根据具体需求场景设置
+                            params.width = ViewGroup.LayoutParams.MATCH_PARENT
+                        } else {
+                            params.height = 0
+                            params.width = 0
+                        }
+                        itemView.layoutParams = params
+                    }
+                }
+
+
             })
+
 
 //        XposedBridge.hookMethod(
 //            Methods.AddressItemConvert_onBindViewHolder, object : XC_MethodHook() {
