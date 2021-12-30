@@ -10,7 +10,6 @@ import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IAdapterHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.AddressItemConvert_onBindViewHolder
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.AddressUI_createMvvmRecyclerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
 import de.robv.android.xposed.XC_MethodHook
@@ -66,19 +65,6 @@ object Adapters : EventCenter() {
             }
         })
 
-        hookMethod(
-            AddressItemConvert_onBindViewHolder, object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    val vh = param.args[0]
-                    val item = param.args[1]
-                    Log.d(
-                        "Xposed-convert",
-                        "AddressItemConvert ,vh:${vh};item:${item}"
-                    )
-                }
-
-            }
-        )
     }
 
     private val onConversationWithCacheAdapterCreateHooker = Hooker {
