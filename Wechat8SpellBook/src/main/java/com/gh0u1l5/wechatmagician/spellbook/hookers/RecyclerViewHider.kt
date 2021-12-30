@@ -1,12 +1,14 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
-import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
 import com.gh0u1l5.wechatmagician.spellbook.data.Record
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.mvvmlist.Classes.MvvmRecyclerAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers
 import java.util.concurrent.ConcurrentHashMap
@@ -54,12 +56,84 @@ object RecyclerViewHider : HookerProvider {
 
 
     override fun provideStaticHookers(): List<Hooker> {
-        return listOf(MMBaseAdapterHooker)
+        return listOf(WxRecyclerAdapterHooker)
     }
 
-    private val MMBaseAdapterHooker = Hooker {
-        XposedHelpers.findAndHookMethod(MvvmRecyclerAdapter,"",)
+    private val WxRecyclerAdapterHooker = Hooker {
+        /**
+         *  构造 WxRecyclerAdapter 时会传入 itemConvertFactory
+         *  bindViewHolder 时候, 会通过  ItemConvertFactory 取 ItemConvert
+         *  这里拦截 ItemConvert 的 onBindViewHolder 方法
+         */
+        XposedHelpers.findAndHookMethod("com.tencent.mm.view.recyclerview.f",
+            WechatGlobal.wxLoader,
+            "a",
+            Classes.WxViewHolder,
+            Classes.ConvertData,
+            C.Int,
+            C.Int,
+            C.Boolean,
+            C.List,
+            object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam?) {
+                    super.afterHookedMethod(param)
+                    param?.let {
+                        val simpleViewHolder = param.args[0]
+                        val item = param.args[1]
+                        val position = param.args[2]
+                        val itemType = param.args[3]
+                        val isHotPatch = param.args[4]
+                        Log.d(
+                            "Xposed-convert",
+                            "AddressItemConvert ,vh:${simpleViewHolder};item:${item};position:${position}itemType:${itemType}"
+                        )
+                    }
 
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_RV_ADAPTER)
+                }
+            })
+
+//        XposedBridge.hookMethod(
+//            Methods.AddressItemConvert_onBindViewHolder, object : XC_MethodHook() {
+//                override fun afterHookedMethod(param: MethodHookParam) {
+//                    val vh = param.args[0]
+//                    val item = param.args[1]
+//                    val position = param.args[2]
+//                    val itemType = param.args[3]
+//                    Log.d(
+//                        "Xposed-convert",
+//                        "AddressItemConvert ,vh:${vh};item:${item};position:${position}itemType:${itemType}"
+//                    )
+//                    for (filed in vh.javaClass.fields) {
+//                        Log.d(
+//                            "Xposed-convert",
+//                            "filed name:${filed.name};type:${filed.type};value:${filed.get(vh)}"
+//                        )
+//                        if (filed.type == View::class.java) {
+//                            val itemView = (filed.get(vh) as View)
+//                            val positionNew = vh.javaClass.getMethod("getPosition")
+//                                .invoke(vh)
+//                            if (positionNew != -1) {
+//                                val visible = positionNew != 1
+//                                itemView.visibility = if (visible) View.VISIBLE else View.GONE
+//                                val params = itemView.layoutParams as ViewGroup.LayoutParams
+//                                Log.d(
+//                                    "Xposed-convert",
+//                                    "params ${params.height}"
+//                                )
+//                                if (visible) {
+//                                    params.height =
+//                                        ViewGroup.LayoutParams.WRAP_CONTENT // 根据具体需求场景设置
+//                                    params.width = ViewGroup.LayoutParams.MATCH_PARENT
+//                                } else {
+//                                    params.height = 0
+//                                    params.width = 0
+//                                }
+//                                itemView.layoutParams = params
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        )
     }
 }

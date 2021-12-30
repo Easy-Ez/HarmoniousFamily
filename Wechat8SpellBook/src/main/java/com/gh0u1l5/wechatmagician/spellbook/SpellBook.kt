@@ -150,7 +150,11 @@ object SpellBook {
      */
     private fun registerHookers(plugins: List<Any>?) {
         val providers = plugins?.filterIsInstance<HookerProvider>() ?: listOf()
-        (providers + listOf(ListViewHider, MenuAppender)).parallelForEach { provider ->
+        (providers + listOf(
+            ListViewHider,
+            RecyclerViewHider,
+            MenuAppender
+        )).parallelForEach { provider ->
             provider.provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
                     XposedUtil.postHooker(hooker)
