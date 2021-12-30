@@ -47,6 +47,21 @@ class Classes(private val classes: List<Class<*>>) {
         return filterBySuper(superClass, 0)
     }
 
+    /**
+     * 过滤实现了某个类的类
+     */
+    fun filterByImplement(implClass: Class<*>?): Classes {
+        return Classes(classes.filter { it.interfaces.any { `interface` -> `interface` == implClass } }
+            .also {
+                if (it.isEmpty()) {
+                    Log.w(
+                        TAG,
+                        "filterByImplement found nothing, implClass class = ${implClass?.simpleName} "
+                    )
+                }
+            })
+    }
+
     fun filterBySuper(superClass: Class<*>?, depth: Int): Classes {
         return Classes(classes.filter { findSupper(it, superClass, depth) == superClass }.also {
             if (it.isEmpty()) {
@@ -179,12 +194,45 @@ class Classes(private val classes: List<Class<*>>) {
             }
         })
     }
+
+    /**
+     * 过滤出是静态类
+     */
+    fun filterIsStaticClass(): Classes {
+        return Classes(classes.filter { clazz ->
+            Modifier.isStatic(clazz.modifiers)
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(
+                    TAG,
+                    "filterIsStaticClass found nothing"
+                )
+            }
+        })
+    }
+
     /**
      * 过滤出是非抽象类
      */
     fun filterIsNotAbsClass(): Classes {
         return Classes(classes.filter { clazz ->
-            !Modifier.isAbstract (clazz.modifiers)
+            !Modifier.isAbstract(clazz.modifiers)
+        }.also {
+            if (it.isEmpty()) {
+                Log.w(
+                    TAG,
+                    "filterAnonymousClass found nothing"
+                )
+            }
+        })
+    }
+
+    /**
+     * 过滤出是静态抽象类
+     */
+    fun filterIsAbsAndStaticClass(): Classes {
+        return Classes(classes.filter { clazz ->
+            Modifier.isAbstract(clazz.modifiers) && Modifier.isStatic(clazz.modifiers)
         }.also {
             if (it.isEmpty()) {
                 Log.w(
