@@ -6,7 +6,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
 import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.sns.ui.Classes.SnsEditTextInterface
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.sns.ui.Classes.SnsUploadUI
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findFieldsWithType
+import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findDeclaredFieldsWithType
 import java.lang.reflect.Field
 
 object Fields {
@@ -18,11 +18,11 @@ object Fields {
     private fun getSnsEditTextField(): Field? {
         return when {
             WechatGlobal.wxVersion!! >= Versions.v8_0_1 -> {
-                findFieldsWithType(SnsUploadUI, SnsEditTextInterface.name)
+                findDeclaredFieldsWithType(SnsUploadUI, SnsEditTextInterface.name)
                     .firstOrNull()?.apply { isAccessible = true }
             }
             else -> {
-                findFieldsWithType(SnsUploadUI, "$wxPackageName.plugin.sns.ui.SnsEditText")
+                findDeclaredFieldsWithType(SnsUploadUI, "$wxPackageName.plugin.sns.ui.SnsEditText")
                     .firstOrNull()?.apply { isAccessible = true }
             }
         }
