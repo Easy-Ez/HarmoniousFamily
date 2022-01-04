@@ -12,6 +12,7 @@ import com.gh0u1l5.wechatmagician.spellbook.interfaces.IAdapterHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.AddressUI_createMvvmRecyclerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.WxRecyclerAdapter
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookMethod
@@ -52,13 +53,15 @@ object Adapters : EventCenter() {
         hookMethod(AddressUI_createMvvmRecyclerAdapter, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.result
-                if (adapter == null) {
+                // 这里加强下判断, adapter 是否为 WxRecyclerAdapter 的子类, 此时 adapter 人应为MvvmRecyclerAdapter
+                if (adapter == null || !WxRecyclerAdapter.isAssignableFrom(adapter::class.java)) {
                     Log.d(
                         "InnerAdapter",
                         "Expect address adapter to be RecyclerView.Adapter, get ${param.result::class.java}"
                     )
                     return
                 }
+
                 notify("onAddressAdapterCreated") { plugin ->
                     Log.d("InnerAdapter", "AddressItemConvert ,thisObject:${adapter}")
                     (plugin as IAdapterHook).onAddressAdapterCreated(InnerAdapter(adapter))
