@@ -5,6 +5,7 @@ package com.gh0u1l5.wechatmagician.spellbook.mirror
  */
 val MirrorClasses = listOf(
     com.gh0u1l5.wechatmagician.spellbook.mirror.android.support.v4.app.Classes,
+    com.gh0u1l5.wechatmagician.spellbook.mirror.androidx.recyclerview.widget.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mars.xlog.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.Classes,
     com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.booter.notification.Classes,
