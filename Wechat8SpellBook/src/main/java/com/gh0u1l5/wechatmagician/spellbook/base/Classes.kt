@@ -3,10 +3,10 @@ package com.gh0u1l5.wechatmagician.spellbook.base
 import android.util.Log
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findConstructorIfExists
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findFieldIfExists
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findFieldsWithType
+import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findDeclaredFieldsWithType
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodExactIfExists
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findMethodsByExactParameters
-import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findStaticFieldsWithType
+import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findStaticDeclaredFieldsWithType
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findSupper
 import java.lang.reflect.Modifier
 
@@ -148,7 +148,7 @@ class Classes(private val classes: List<Class<*>>) {
 
     fun filterByField(fieldType: String): Classes {
         return Classes(classes.filter { clazz ->
-            findFieldsWithType(clazz, fieldType).isNotEmpty()
+            findDeclaredFieldsWithType(clazz, fieldType).isNotEmpty()
         }.also {
             if (it.isEmpty()) {
                 Log.w(TAG, "filterByField found nothing, fieldType = $fieldType")
@@ -158,7 +158,7 @@ class Classes(private val classes: List<Class<*>>) {
 
     fun filterByFieldType(fieldType: Class<*>): Classes {
         return Classes(classes.filter { clazz ->
-            findFieldsWithType(clazz, fieldType).isNotEmpty()
+            findDeclaredFieldsWithType(clazz, fieldType).isNotEmpty()
         }.also {
             if (it.isEmpty()) {
                 Log.w(TAG, "filterByField found nothing, fieldType = $fieldType")
@@ -277,7 +277,7 @@ class Classes(private val classes: List<Class<*>>) {
 
     fun filterByValueOfStaticField(value: Any): Classes {
         return Classes(classes.filter { clazz ->
-            val fields = findStaticFieldsWithType(clazz, value::class.java.name)
+            val fields = findStaticDeclaredFieldsWithType(clazz, value::class.java.name)
             fields.any(predicate = { field ->
                 field.isAccessible = true
                 try {
