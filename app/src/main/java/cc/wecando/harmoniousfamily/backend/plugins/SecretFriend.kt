@@ -8,7 +8,6 @@ import android.os.Looper
 import android.util.Log
 import android.widget.BaseAdapter
 import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
 import cc.wecando.harmoniousfamily.Global.ITEM_ID_BUTTON_HIDE_FRIEND
 import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND
 import cc.wecando.harmoniousfamily.Global.SETTINGS_SECRET_FRIEND_HIDE_OPTION
@@ -22,11 +21,13 @@ import cc.wecando.harmoniousfamily.utils.PasswordUtil
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.AddressAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObjectNew
+import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.hookers.ListViewHider
 import com.gh0u1l5.wechatmagician.spellbook.hookers.MenuAppender
 import com.gh0u1l5.wechatmagician.spellbook.hookers.RecyclerViewHider
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.*
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.chatting.Classes.ChattingUI
+import com.gh0u1l5.wechatmagician.spellbook.util.FiledHelper
 import de.robv.android.xposed.XposedHelpers.getObjectField
 
 object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenuHook,
@@ -38,12 +39,12 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
 
     private fun isPluginEnabled() = pref.getBoolean(SETTINGS_SECRET_FRIEND, true)
 
-    override fun onAddressAdapterCreated(adapter: RecyclerView.Adapter<*>) {
+    override fun onAddressAdapterCreated(adapter: InnerAdapter) {
         if (!isPluginEnabled()) {
             return
         }
-        RecyclerViewHider.register(adapter, "Srecyecret Friend") { item ->
-            val username = getObjectField(item, "field_username")
+        RecyclerViewHider.register(adapter, "Secret Friend") { item ->
+            val username = FiledHelper.getUserNameFromContactInfo(item)
             username in SecretFriendList
         }
     }
@@ -193,7 +194,9 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
         AddressAdapterObject.get()?.notifyDataSetChanged()
         ConversationAdapterObject.get()?.notifyDataSetChanged()
-        ConversationAdapterObjectNew.get()?.notifyDataSetChanged()
+        val addressAdapter = ConversationAdapterObjectNew.get()
+        Log.d("InnerAdapter", "addressAdapter:${addressAdapter}")
+        addressAdapter?.notifyDataSetChanged()
     }
 
     /**

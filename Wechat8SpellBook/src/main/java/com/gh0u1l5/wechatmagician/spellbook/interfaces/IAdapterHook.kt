@@ -4,9 +4,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.BaseAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
+import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 
 interface IAdapterHook {
 
@@ -22,7 +22,7 @@ interface IAdapterHook {
      * todo 更新注释
      * 从 版本开始, 通讯录列表换成了 RecyclerView 实现, 因此创建的 Adapter 也需要变更下
      */
-    fun onAddressAdapterCreated(adapter: RecyclerView.Adapter<*>) {}
+    fun onAddressAdapterCreated(adapter: InnerAdapter) {}
 
     /**
      * Called when a Wechat ConversationAdapter has been created. This adapter will be used in the

@@ -4,10 +4,10 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.base.EventCenter
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
+import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IAdapterHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.AddressUI_createMvvmRecyclerAdapter
@@ -51,16 +51,17 @@ object Adapters : EventCenter() {
         })
         hookMethod(AddressUI_createMvvmRecyclerAdapter, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
-                val adapter = param.result as? RecyclerView.Adapter<*>?
+                val adapter = param.result
                 if (adapter == null) {
                     Log.d(
-                        "Xposed",
-                        "Expect address adapter to be RecyclerView.Adapter, get ${param.thisObject::class.java}"
+                        "InnerAdapter",
+                        "Expect address adapter to be RecyclerView.Adapter, get ${param.result::class.java}"
                     )
                     return
                 }
                 notify("onAddressAdapterCreated") { plugin ->
-                    (plugin as IAdapterHook).onAddressAdapterCreated(adapter)
+                    Log.d("InnerAdapter", "AddressItemConvert ,thisObject:${adapter}")
+                    (plugin as IAdapterHook).onAddressAdapterCreated(InnerAdapter(adapter))
                 }
             }
         })

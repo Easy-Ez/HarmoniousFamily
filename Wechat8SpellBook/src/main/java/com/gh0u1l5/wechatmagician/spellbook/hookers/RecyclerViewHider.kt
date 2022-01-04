@@ -3,10 +3,10 @@ package com.gh0u1l5.wechatmagician.spellbook.hookers
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
+import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.data.Record
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Methods.WxRecyclerAdapter_getOnItemConvertClickListener
 import de.robv.android.xposed.XC_MethodHook
@@ -15,10 +15,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 object RecyclerViewHider : HookerProvider {
 
-    private val records: MutableMap<RecyclerView.Adapter<*>, Record> = ConcurrentHashMap()
+    private val records: MutableMap<InnerAdapter, Record> = ConcurrentHashMap()
 
     fun register(
-        adapter: RecyclerView.Adapter<*>,
+        adapter: InnerAdapter,
         predicateName: String,
         predicateBody: Predicate
     ) {
@@ -31,7 +31,6 @@ object RecyclerViewHider : HookerProvider {
             record.predicates += (predicateName to predicateBody)
         }
     }
-
 
 
     override fun provideStaticHookers(): List<Hooker> {
@@ -55,82 +54,44 @@ object RecyclerViewHider : HookerProvider {
                         val positionForList = param.args[2] as Int
                         Log.d(
                             "Xposed-convert",
-                            "AddressItemConvert ,itemView:${itemView};item:${item};positionForList:${positionForList}"
+                            "AddressItemConvert ,thisObject:${param.thisObject};itemView:${itemView};item:${item};positionForList:${positionForList}"
                         )
-                        toggleItemVisible(itemView, item, positionForList)
+                        toggleItemVisible(param.thisObject, itemView, item, positionForList)
                     }
 
                 }
 
-                private fun toggleItemVisible(itemView: View, item: Any?, positionForList: Int) {
+                private fun toggleItemVisible(
+                    adapter: Any,
+                    itemView: View,
+                    item: Any?,
+                    positionForList: Int
+                ) {
                     if (positionForList != -1) {
-                        // todo 这里插入判断  VISIBLE or GONE 逻辑
-                        val visible = records[Any()]?.predicates?.values?.any { it(item) } ?: true
+                        val gone =
+                            records.firstNotNullOfOrNull {
+                                if (it.key.adapter == adapter) {
+                                    it.value
+                                } else {
+                                    null
+                                }
+                            }?.predicates?.values?.any {
+                                it(item)
+                            } ?: false
 
-                        itemView.visibility = if (visible) View.VISIBLE else View.GONE
+                        itemView.visibility = if (gone) View.GONE else  View.VISIBLE
                         val params = itemView.layoutParams as ViewGroup.LayoutParams
-                        Log.d(
-                            "Xposed-convert",
-                            "params ${params.height}"
-                        )
-                        if (visible) {
+                        if (gone) {
+                            params.height = 0
+                            params.width = 0
+                        } else {
                             params.height =
                                 ViewGroup.LayoutParams.WRAP_CONTENT // 根据具体需求场景设置
                             params.width = ViewGroup.LayoutParams.MATCH_PARENT
-                        } else {
-                            params.height = 0
-                            params.width = 0
                         }
                         itemView.layoutParams = params
                     }
                 }
-
-
             })
-
-
-//        XposedBridge.hookMethod(
-//            Methods.AddressItemConvert_onBindViewHolder, object : XC_MethodHook() {
-//                override fun afterHookedMethod(param: MethodHookParam) {
-//                    val vh = param.args[0]
-//                    val item = param.args[1]
-//                    val position = param.args[2]
-//                    val itemType = param.args[3]
-//                    Log.d(
-//                        "Xposed-convert",
-//                        "AddressItemConvert ,vh:${vh};item:${item};position:${position}itemType:${itemType}"
-//                    )
-//                    for (filed in vh.javaClass.fields) {
-//                        Log.d(
-//                            "Xposed-convert",
-//                            "filed name:${filed.name};type:${filed.type};value:${filed.get(vh)}"
-//                        )
-//                        if (filed.type == View::class.java) {
-//                            val itemView = (filed.get(vh) as View)
-//                            val positionNew = vh.javaClass.getMethod("getPosition")
-//                                .invoke(vh)
-//                            if (positionNew != -1) {
-//                                val visible = positionNew != 1
-//                                itemView.visibility = if (visible) View.VISIBLE else View.GONE
-//                                val params = itemView.layoutParams as ViewGroup.LayoutParams
-//                                Log.d(
-//                                    "Xposed-convert",
-//                                    "params ${params.height}"
-//                                )
-//                                if (visible) {
-//                                    params.height =
-//                                        ViewGroup.LayoutParams.WRAP_CONTENT // 根据具体需求场景设置
-//                                    params.width = ViewGroup.LayoutParams.MATCH_PARENT
-//                                } else {
-//                                    params.height = 0
-//                                    params.width = 0
-//                                }
-//                                itemView.layoutParams = params
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        )
     }
 }
