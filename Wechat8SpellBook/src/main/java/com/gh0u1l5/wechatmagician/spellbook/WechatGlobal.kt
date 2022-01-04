@@ -2,16 +2,16 @@ package com.gh0u1l5.wechatmagician.spellbook
 
 import android.widget.Adapter
 import android.widget.BaseAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.SpellBook.getApplicationVersion
 import com.gh0u1l5.wechatmagician.spellbook.base.Version
 import com.gh0u1l5.wechatmagician.spellbook.base.WaitChannel
+import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.parser.ApkFile
 import com.gh0u1l5.wechatmagician.spellbook.parser.ClassTrie
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
@@ -99,19 +99,19 @@ object WechatGlobal {
 
     // 缓存一些重要的微信全局对象
     @Volatile
-    var AddressAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
+    var AddressAdapterObject: SoftReference<BaseAdapter?> = SoftReference(null)
 
     @Volatile
-    var ConversationAdapterObject: WeakReference<BaseAdapter?> = WeakReference(null)
+    var ConversationAdapterObject: SoftReference<BaseAdapter?> = SoftReference(null)
 
     /**
      * 新版本微信通讯录使用 RecyclerView 实现
      */
     @Volatile
-    var ConversationAdapterObjectNew: WeakReference<RecyclerView.Adapter<*>?> = WeakReference(null)
+    var ConversationAdapterObjectNew: SoftReference<InnerAdapter> = SoftReference(null)
 
     @Volatile
-    var SnsUserUIAdapterObject: WeakReference<Adapter?> = WeakReference(null)
+    var SnsUserUIAdapterObject: SoftReference<Adapter?> = SoftReference(null)
 
     @Volatile
     var MsgStorageObject: Any? = null

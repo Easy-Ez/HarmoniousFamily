@@ -2,7 +2,6 @@ package cc.wecando.harmoniousfamily.backend.plugins
 
 import android.content.ContentValues
 import android.widget.BaseAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.AddressAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObjectNew
@@ -12,8 +11,9 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.MsgStorageObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.SnsDatabaseObject
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
+import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.*
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 
 object ObjectsHunter : IActivityHook, IAdapterHook, IDatabaseHook, IMessageStorageHook,
     IImageStorageHook {
@@ -33,15 +33,15 @@ object ObjectsHunter : IActivityHook, IAdapterHook, IDatabaseHook, IMessageStora
     }
 
     override fun onAddressAdapterCreated(adapter: BaseAdapter) {
-        AddressAdapterObject = WeakReference(adapter)
+        AddressAdapterObject = SoftReference(adapter)
     }
 
     override fun onConversationAdapterCreated(adapter: BaseAdapter) {
-        ConversationAdapterObject = WeakReference(adapter)
+        ConversationAdapterObject = SoftReference(adapter)
     }
 
-    override fun onAddressAdapterCreated(adapter: RecyclerView.Adapter<*>) {
-        ConversationAdapterObjectNew = WeakReference(adapter)
+    override fun onAddressAdapterCreated(adapter: InnerAdapter) {
+        ConversationAdapterObjectNew = SoftReference(adapter)
     }
 
     override fun onDatabaseOpened(

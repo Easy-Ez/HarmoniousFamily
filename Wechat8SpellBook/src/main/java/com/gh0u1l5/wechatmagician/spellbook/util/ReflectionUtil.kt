@@ -237,15 +237,25 @@ object ReflectionUtil {
      * 查找指定类中所有特定类型的成员变量
      */
     @JvmStatic
-    fun findFieldsWithType(clazz: Class<*>, typeName: String): List<Field> {
+    fun findDeclaredFieldsWithType(clazz: Class<*>, typeName: String): List<Field> {
         return clazz.declaredFields.filter {
             it.type.name == typeName
         }
     }
 
     @JvmStatic
-    fun findFieldsWithType(clazz: Class<*>, filedTypeClass: Class<*>): List<Field> {
+    fun findDeclaredFieldsWithType(clazz: Class<*>, filedTypeClass: Class<*>): List<Field> {
         return clazz.declaredFields.filter {
+            it.type == filedTypeClass
+        }
+    }
+
+    /**
+     * 查找指定类以及父类中所有特定类型的成员变量
+     */
+    @JvmStatic
+    fun findFieldsWithType(clazz: Class<*>, filedTypeClass: Class<*>): List<Field> {
+        return clazz.fields.filter {
             it.type == filedTypeClass
         }
     }
@@ -254,7 +264,7 @@ object ReflectionUtil {
      * 查找指定类中所有特定类型的静态成员变量
      */
     @JvmStatic
-    fun findStaticFieldsWithType(clazz: Class<*>, typeName: String): List<Field> {
+    fun findStaticDeclaredFieldsWithType(clazz: Class<*>, typeName: String): List<Field> {
         return clazz.declaredFields.filter {
             Modifier.isStatic(it.modifiers) && it.type.name == typeName
         }
