@@ -95,6 +95,27 @@ class MirrorUnitTest {
     }
 
     @Test
+    fun verifyDomesticPackage8_0_11() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v8.0.11.apk")
+    }
+
+    @Test
+    fun verifyDomesticPackage8_0_10() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v8.0.10.apk")
+    }
+
+    @Test
+    fun verifyDomesticPackage8_0_9() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v8.0.9.apk")
+    }
+
+
+    @Test
+    fun verifyDomesticPackage8_0_7() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v8.0.7.apk")
+    }
+
+    @Test
     fun verifyDomesticPackage8_0_6() {
         verifyPackage("$DOMESTIC_DIR/wechat-v8.0.6.apk")
     }

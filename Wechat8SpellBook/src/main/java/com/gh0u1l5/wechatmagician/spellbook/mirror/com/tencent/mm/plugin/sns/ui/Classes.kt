@@ -5,8 +5,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxClasses
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
-import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_16
-import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_6
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExists
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
@@ -40,7 +39,7 @@ object Classes {
 
     private fun getSnsActivityByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= v8_0_16 -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_9 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
                     .filterByField("$wxPackageName.ui.base.MMOverScrollView")
                     .firstOrNull()
@@ -55,7 +54,7 @@ object Classes {
 
     private fun getSnsTimeLineUIByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= v8_0_6 -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_6 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
                     .filterByField("androidx.appcompat.app.ActionBar")
                     .firstOrNull()

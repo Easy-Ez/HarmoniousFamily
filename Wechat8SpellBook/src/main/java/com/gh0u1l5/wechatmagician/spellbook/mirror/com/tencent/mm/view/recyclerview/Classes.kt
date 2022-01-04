@@ -6,14 +6,14 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 
 object Classes {
-    val WxRecyclerAdapter: Class<*> by WechatGlobal.wxLazy("WxRecyclerAdapter", Versions.v8_0_16) {
+    val WxRecyclerAdapter: Class<*> by WechatGlobal.wxLazy("WxRecyclerAdapter", Versions.v8_0_11) {
         ReflectionUtil.findClassIfExists(
             "${WechatGlobal.wxPackageName}.view.recyclerview.WxRecyclerAdapter",
             WechatGlobal.wxLoader!!
         )
     }
 
-    val SimpleViewHolder: Class<*> by WechatGlobal.wxLazy("SimpleViewHolder", Versions.v8_0_16) {
+    val SimpleViewHolder: Class<*> by WechatGlobal.wxLazy("SimpleViewHolder", Versions.v8_0_11) {
         ReflectionUtil.findClassesFromPackage(
             WechatGlobal.wxLoader!!,
             WechatGlobal.wxClasses!!,
@@ -32,7 +32,7 @@ object Classes {
      */
     val FixedViewInfo: Class<*> by WechatGlobal.wxLazy(
         "RecyclerViewAdapterEx\$FixedViewInfo",
-        Versions.v8_0_16
+        Versions.v8_0_11
     ) {
         ReflectionUtil.findClassesFromPackage(
             WechatGlobal.wxLoader!!,
@@ -44,7 +44,7 @@ object Classes {
             .firstOrNull()
     }
 
-    val ConvertData: Class<*> by WechatGlobal.wxLazy("ConvertData", Versions.v8_0_16) {
+    val ConvertData: Class<*> by WechatGlobal.wxLazy("ConvertData", Versions.v8_0_11) {
         ReflectionUtil.findClassesFromPackage(
             WechatGlobal.wxLoader!!,
             WechatGlobal.wxClasses!!,

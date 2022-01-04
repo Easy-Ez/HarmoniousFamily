@@ -101,7 +101,7 @@ object MenuAppender : EventCenter() {
                  * 拦截通讯录长按事件, 获取当前 item 的 userName
                  */
                 private fun handleItemLongClick(param: MethodHookParam) {
-                    val contactInfo = if (WechatGlobal.wxVersion!! >= Versions.v8_0_16) {
+                    val contactInfo = if (WechatGlobal.wxVersion!! >= Versions.v8_0_11) {
                         val itemView = param.args[0] as View?
                         val item = param.args[1]
                         val position = param.args[2] as Int

@@ -8,9 +8,13 @@ import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import java.lang.reflect.Field
 
 object Fields {
-    val Adapter_Observable: Field by WechatGlobal.wxLazy("Adapter_Observable", Versions.v8_0_16) {
+    val Adapter_Observable: Field by WechatGlobal.wxLazy("Adapter_Observable", Versions.v8_0_11) {
         ReflectionUtil
-            .findFieldsWithType(WxRecyclerAdapter, AdapterDataObservable)
+            .findDeclaredFieldsWithType(
+                WxRecyclerAdapter.superclass.superclass,
+                AdapterDataObservable
+            )
             .firstOrNull()
+            ?.apply { isAccessible = true }
     }
 }

@@ -21,7 +21,7 @@ object Methods {
      */
     val WxRecyclerAdapter_getOnItemConvertClickListener: Method by WechatGlobal.wxLazy(
         "WxRecyclerAdapter_onBindViewHolder",
-        Versions.v8_0_16
+        Versions.v8_0_11
     ) {
         ReflectionUtil.findMethodsByExactParameters(
             WxRecyclerAdapter,

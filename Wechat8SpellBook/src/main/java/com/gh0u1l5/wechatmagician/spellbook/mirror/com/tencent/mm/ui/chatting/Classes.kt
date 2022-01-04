@@ -22,7 +22,7 @@ object Classes {
      */
     private fun getChattingUIByRules(): Class<*>? {
         return when {
-            WechatGlobal.wxVersion!! >= Versions.v8_0_16 -> {
+            WechatGlobal.wxVersion!! >= Versions.v8_0_11 -> {
                 findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.chatting")
                     .filterAnonymousClass()
                     .filterBySuper(MMFragmentActivity, 2)

@@ -5,7 +5,7 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 
 object Classes {
-    private val Observable: Class<*> by WechatGlobal.wxLazy("Observable", Versions.v8_0_16) {
+    private val Observable: Class<*> by WechatGlobal.wxLazy("Observable", Versions.v8_0_11) {
         ReflectionUtil.findClassIfExists(
             "android.database.Observable",
             WechatGlobal.wxLoader!!,
@@ -13,7 +13,7 @@ object Classes {
     }
     val AdapterDataObservable: Class<*> by WechatGlobal.wxLazy(
         "RecyclerView.AdapterDataObservable",
-        Versions.v8_0_16
+        Versions.v8_0_11
     ) {
         ReflectionUtil.findClassesFromPackage(
             WechatGlobal.wxLoader!!,

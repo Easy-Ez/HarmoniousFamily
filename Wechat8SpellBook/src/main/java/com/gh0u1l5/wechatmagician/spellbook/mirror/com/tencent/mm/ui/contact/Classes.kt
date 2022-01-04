@@ -6,9 +6,8 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxVersion
-import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_16
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions.v8_0_11
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.storage.Classes.ContactInfo
-import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.ConvertData
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.SimpleViewHolder
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExists
@@ -39,7 +38,7 @@ object Classes {
     /**
      * 新版通讯录 list item bean
      */
-    val AddressLiveListItem: Class<*> by wxLazy("AddressLiveListItem", v8_0_16) {
+    val AddressLiveListItem: Class<*> by wxLazy("AddressLiveListItem", v8_0_11) {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact.address")
             .filterByFieldType(ContactInfo)
             .firstOrNull()
@@ -49,7 +48,7 @@ object Classes {
      * 通讯录 ItemType 转换器
      * a(j jVar, d dVar, int i, int i2, boolean z, List list)
      */
-    val AddressItemConvert: Class<*> by wxLazy("AddressItemConvert", v8_0_16) {
+    val AddressItemConvert: Class<*> by wxLazy("AddressItemConvert", v8_0_11) {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact.address")
             .filterByMethod(
                 null,
@@ -72,7 +71,7 @@ object Classes {
      */
     private fun findAddressUI(): Class<*>? {
         return when {
-            wxVersion!! >= v8_0_16 -> {
+            wxVersion!! >= v8_0_11 -> {
                 findClassIfExists(
                     "$wxPackageName.ui.contact.address.MvvmAddressUIFragment",
                     wxLoader!!
@@ -92,7 +91,7 @@ object Classes {
      */
     private fun findContactLongClickListener(): Class<*>? {
         return when {
-            wxVersion!! >= v8_0_16 -> {
+            wxVersion!! >= v8_0_11 -> {
                 findClassesFromPackage(
                     wxLoader!!,
                     wxClasses!!,
@@ -124,7 +123,7 @@ object Classes {
      */
     private fun findOnCreateContextMenuListener(): Class<*>? {
         return when {
-            wxVersion!! >= v8_0_16 -> {
+            wxVersion!! >= v8_0_11 -> {
                 findClassesFromPackage(
                     wxLoader!!,
                     wxClasses!!,

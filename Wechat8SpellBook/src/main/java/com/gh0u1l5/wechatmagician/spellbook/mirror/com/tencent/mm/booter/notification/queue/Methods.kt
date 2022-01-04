@@ -12,8 +12,8 @@ object Methods {
         findMethodsByExactParameters(NotificationAppMsgQueue, null, NotificationItem)
                 .firstOrNull()?.apply { isAccessible = true }
     }
-    val NotificationAppMsgQueue_remove: Method by wxLazy("NotificationAppMsgQueue_remove") {
-        findMethodsByExactParameters(NotificationAppMsgQueue, C.Boolean, C.String)
-                .firstOrNull()?.apply { isAccessible = true }
-    }
+//    val NotificationAppMsgQueue_remove: Method by wxLazy("NotificationAppMsgQueue_remove") {
+//        findMethodsByExactParameters(NotificationAppMsgQueue, C.Boolean, C.String)
+//                .firstOrNull()?.apply { isAccessible = true }
+//    }
 }

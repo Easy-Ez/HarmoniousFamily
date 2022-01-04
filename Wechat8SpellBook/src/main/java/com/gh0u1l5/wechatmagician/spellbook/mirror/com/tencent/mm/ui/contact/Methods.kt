@@ -35,7 +35,7 @@ object Methods {
      */
     val AddressUI_createMvvmRecyclerAdapter: Method by wxLazy(
         "AddressUI_createMvvmRecyclerAdapter",
-        Versions.v8_0_16
+        Versions.v8_0_11
     ) {
         findMethodsByExactParameters(
             AddressUI,
@@ -44,7 +44,7 @@ object Methods {
     }
     val AddressItemConvert_onBindViewHolder: Method by wxLazy(
         "AddressItemConvert_onBindViewHolder",
-        Versions.v8_0_16
+        Versions.v8_0_11
     ) {
         findMethodsByExactParameters(
             AddressItemConvert,
@@ -61,7 +61,7 @@ object Methods {
 
     private fun findOnItemLongClickMethod(): Method? {
         return when {
-            wxVersion!! >= Versions.v8_0_16 -> {
+            wxVersion!! >= Versions.v8_0_11 -> {
                 findMethodsByExactParameters(
                     ContactLongClickListener,
                     C.Boolean,
