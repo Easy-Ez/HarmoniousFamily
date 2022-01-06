@@ -98,7 +98,7 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
      * Hide the chatting windows for secret friends.
      * 防止从朋友圈进入
      */
-    override fun onActivityStarting(activity: Activity) {
+    override fun onActivityResuming(activity: Activity) {
         if (!isPluginEnabled()) {
             return
         }

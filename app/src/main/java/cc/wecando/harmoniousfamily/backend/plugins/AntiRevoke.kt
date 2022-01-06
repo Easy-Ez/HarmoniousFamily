@@ -9,10 +9,12 @@ import cc.wecando.harmoniousfamily.backend.WechatHook
 import cc.wecando.harmoniousfamily.backend.storage.Strings
 import cc.wecando.harmoniousfamily.backend.storage.cache.MessageCache
 import cc.wecando.harmoniousfamily.utils.MessageUtil
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.MsgStorageObject
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.replacement
+import com.gh0u1l5.wechatmagician.spellbook.base.Versions
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IDatabaseHook
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IFileSystemHook
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IMessageStorageHook
@@ -25,13 +27,25 @@ import de.robv.android.xposed.XposedHelpers
 import java.io.File
 
 object AntiRevoke : IDatabaseHook, IFileSystemHook, IMessageStorageHook, IXmlParserHook {
+    private const val REVOKE_TYPE_LEGACY = 10000
+    private const val REVOKE_TYPE_NEW = 268445456
 
     private const val LOG_TAG = "Xposed-AntiRevoke"
     private const val ROOT_TAG = "sysmsg"
     private const val TYPE_TAG = ".sysmsg.\$type"
     private const val REPLACE_MSG_TAG = ".sysmsg.revokemsg.replacemsg"
 
-    private val pref = WechatHook.settings
+    private val REVOKE_TYPE: Int
+        get() {
+            return if (WechatGlobal.wxVersion!! > Versions.v8_0_6) {
+                REVOKE_TYPE_NEW
+            } else {
+                REVOKE_TYPE_LEGACY
+            }
+        }
+
+    private
+    val pref = WechatHook.settings
 
     private fun isPluginEnabled() = pref.getBoolean(SETTINGS_CHATTING_RECALL, true)
 
@@ -74,13 +88,7 @@ object AntiRevoke : IDatabaseHook, IFileSystemHook, IMessageStorageHook, IXmlPar
         if (!isPluginEnabled()) {
             return nop()
         }
-        Log.d(
-            LOG_TAG,
-            "onDatabaseUpdating table:${table}; type:${values["type"]}; content:${
-                values.getAsString("content")
-            }"
-        )
-        if (table == "message" && values["type"] == 10000 && values.getAsString("content")
+        if (table == "message" && values["type"] == REVOKE_TYPE && values.getAsString("content")
                 .startsWith("\"")
         ) {
             handleMessageRecall(values)
@@ -128,9 +136,10 @@ object AntiRevoke : IDatabaseHook, IFileSystemHook, IMessageStorageHook, IXmlPar
 
             val copy = msg::class.java.newInstance()
             ReflectionUtil.shadowCopy(msg, copy)
-
+            val fieldType =
+                if (WechatGlobal.wxVersion!! > Versions.v8_0_6) REVOKE_TYPE_LEGACY else values["type"] as Int
             val createTime = XposedHelpers.getLongField(msg, "field_createTime")
-            XposedHelpers.setIntField(copy, "field_type", values["type"] as Int)
+            XposedHelpers.setIntField(copy, "field_type", fieldType)
             XposedHelpers.setObjectField(copy, "field_content", values["content"])
             XposedHelpers.setLongField(copy, "field_createTime", createTime + 1L)
 
