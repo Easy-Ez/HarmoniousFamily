@@ -20,6 +20,7 @@ object C {
     val Object = Object::class.java
     val String = String::class.java
     val List = List::class.java
+    val SparseArray = android.util.SparseArray::class.java
     val Throwable = Throwable::class.java
 
     val Activity = android.app.Activity::class.java

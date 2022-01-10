@@ -8,6 +8,7 @@ import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.plugin.mvvmlis
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressItemConvert
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressUI
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.ContactLongClickListener
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.MMSelectContactAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.OnCreateContextMenuListener
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.ConvertData
@@ -29,6 +30,14 @@ object Methods {
             C.ContextMenuInfo
         ).firstOrNull()
     }
+    val MMSelectContactAdapter_getItemInternal: String by wxLazy("MMSelectContactAdapter_getItemInternal") {
+        MMSelectContactAdapter.declaredMethods.filter {
+            it.parameterTypes.size == 1 && it.parameterTypes[0] == C.Int
+        }.firstOrNull {
+            it.name != "getItem" && it.name != "getItemId"
+        }?.name
+    }
+
 
     /**
      * MvvmAddressUIFragment$Companion 内部会创建 MvvmRecyclerAdapter 用于展示通讯录列表

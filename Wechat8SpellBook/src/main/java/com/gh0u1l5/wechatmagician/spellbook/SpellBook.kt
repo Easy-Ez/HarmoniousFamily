@@ -155,6 +155,7 @@ object SpellBook {
             RecyclerViewHider,
             MenuAppender
         )).parallelForEach { provider ->
+            Log.d("yaocai-dev", provider.javaClass.simpleName)
             provider.provideStaticHookers()?.forEach { hooker ->
                 if (!hooker.hasHooked) {
                     XposedUtil.postHooker(hooker)

@@ -32,6 +32,8 @@ interface IAdapterHook {
      */
     fun onConversationAdapterCreated(adapter: BaseAdapter) {}
 
+    fun onRecentConversationAdapterCreated(adapter: BaseAdapter) {}
+
     /**
      * Called when an HeaderViewListAdapter object is going to invoke [Adapter.getView] method.
      *

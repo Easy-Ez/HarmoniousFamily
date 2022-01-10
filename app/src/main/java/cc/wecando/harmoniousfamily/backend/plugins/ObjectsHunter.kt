@@ -8,6 +8,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObje
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ImgStorageObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.MainDatabaseObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.MsgStorageObject
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.RecentConversationAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.SnsDatabaseObject
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation
 import com.gh0u1l5.wechatmagician.spellbook.base.Operation.Companion.nop
@@ -38,6 +39,10 @@ object ObjectsHunter : IActivityHook, IAdapterHook, IDatabaseHook, IMessageStora
 
     override fun onConversationAdapterCreated(adapter: BaseAdapter) {
         ConversationAdapterObject = SoftReference(adapter)
+    }
+
+    override fun onRecentConversationAdapterCreated(adapter: BaseAdapter) {
+        RecentConversationAdapterObject = SoftReference(adapter)
     }
 
     override fun onAddressAdapterCreated(adapter: InnerAdapter) {

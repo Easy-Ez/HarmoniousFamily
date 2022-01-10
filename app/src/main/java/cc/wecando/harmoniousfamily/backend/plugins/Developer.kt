@@ -36,10 +36,10 @@ import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import java.io.File
 
 object Developer : HookerProvider {
-
+    const val TAG = "Developer"
     private val pref = WechatHook.developer
 
-    override fun provideStaticHookers(): List<Hooker>? {
+    override fun provideStaticHookers(): List<Hooker> {
         return listOf(
             traceTouchEventsHooker,
             traceActivitiesHooker,
@@ -57,7 +57,10 @@ object Developer : HookerProvider {
             findAndHookMethod(C.View, "onTouchEvent", C.MotionEvent, object : XC_MethodHook() {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
-                     Log.d("Xposed","View.onTouchEvent => obj.class = ${param.thisObject::class.java}")
+                    Log.d(
+                        "Xposed",
+                        "View.onTouchEvent => obj.class = ${param.thisObject::class.java}"
+                    )
                 }
             })
         }
@@ -70,7 +73,8 @@ object Developer : HookerProvider {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val intent = param.args[0] as Intent?
-                    log(
+                    Log.d(
+                        "${TAG}-startActivity",
                         "Activity.startActivity => " +
                                 "${param.thisObject::class.java}, " +
                                 "intent => ${bundleToString(intent?.extras)}"
@@ -83,7 +87,8 @@ object Developer : HookerProvider {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val bundle = param.args[0] as Bundle?
                     val intent = (param.thisObject as Activity).intent
-                    log(
+                    Log.d(
+                        "${TAG}-onCreate",
                         "Activity.onCreate => " +
                                 "${param.thisObject::class.java}, " +
                                 "intent => ${bundleToString(intent?.extras)}, " +
@@ -102,8 +107,12 @@ object Developer : HookerProvider {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val menu = param.thisObject
                     val context = param.args[0]
-                     Log.d("Xposed","POPUP => menu.class = ${menu::class.java}")
-                     Log.d("Xposed","POPUP => context.class = ${context::class.java}")
+                    Log.d(
+                        "${TAG}-POPUP", "POPUP => menu.class = ${menu::class.java}"
+                    )
+                    Log.d(
+                        "${TAG}-POPUP", "POPUP => context.class = ${context::class.java}"
+                    )
                 }
             })
 
@@ -115,10 +124,16 @@ object Developer : HookerProvider {
                     @Throws(Throwable::class)
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val adapter = param.args[0] as ListAdapter? ?: return
-                         Log.d("Xposed","POPUP => adapter.count = ${adapter.count}")
+                        Log.d("Xposed", "POPUP => adapter.count = ${adapter.count}")
                         (0 until adapter.count).forEach { index ->
-                             Log.d("Xposed","POPUP => adapter.item[$index] = ${adapter.getItem(index)}")
-                             Log.d("Xposed","POPUP => adapter.item[$index].class = ${adapter.getItem(index)::class.java}")
+                            Log.d(
+                                "${TAG}-POPUP",
+                                "POPUP => adapter.item[$index] = ${adapter.getItem(index)}"
+                            )
+                            Log.d(
+                                "${TAG}-POPUP",
+                                "POPUP => adapter.item[$index].class = ${adapter.getItem(index)::class.java}"
+                            )
                         }
                     }
                 })
@@ -141,7 +156,10 @@ object Developer : HookerProvider {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val sql = param.args[1] as String?
                         val selectionArgs = param.args[2] as Array<*>?
-                         Log.d("Xposed","DB => query sql = $sql, selectionArgs = ${argsToString(selectionArgs)}, db = ${param.thisObject}")
+                        Log.d(
+                            "${TAG}-db",
+                            "DB => query sql = $sql, selectionArgs = ${argsToString(selectionArgs)}, db = ${param.thisObject}"
+                        )
                     }
                 })
         }
@@ -154,7 +172,10 @@ object Developer : HookerProvider {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val table = param.args[0] as String?
                         val values = param.args[2] as ContentValues?
-                         Log.d("Xposed","DB => insert table = $table, values = $values, db = ${param.thisObject}")
+                        Log.d(
+                            "${TAG}-db",
+                            "DB => insert table = $table, values = $values, db = ${param.thisObject}"
+                        )
                     }
                 })
         }
@@ -175,7 +196,8 @@ object Developer : HookerProvider {
                         val values = param.args[1] as ContentValues?
                         val whereClause = param.args[2] as String?
                         val whereArgs = param.args[3] as Array<*>?
-                        log(
+                        Log.d(
+                            "${TAG}-db",
                             "DB => update " +
                                     "table = $table, " +
                                     "values = $values, " +
@@ -196,7 +218,8 @@ object Developer : HookerProvider {
                         val table = param.args[0] as String?
                         val whereClause = param.args[1] as String?
                         val whereArgs = param.args[2] as Array<*>?
-                        log(
+                        Log.d(
+                            "${TAG}-db",
                             "DB => delete " +
                                     "table = $table, " +
                                     "whereClause = $whereClause, " +
@@ -215,7 +238,10 @@ object Developer : HookerProvider {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         val sql = param.args[0] as String?
                         val bindArgs = param.args[1] as Array<*>?
-                         Log.d("Xposed","DB => executeSql sql = $sql, bindArgs = ${argsToString(bindArgs)}, db = ${param.thisObject}")
+                        Log.d(
+                            "${TAG}-db",
+                            "DB => executeSql sql = $sql, bindArgs = ${argsToString(bindArgs)}, db = ${param.thisObject}"
+                        )
                     }
                 })
         }
@@ -223,6 +249,7 @@ object Developer : HookerProvider {
 
     // Hook Log to trace hidden logcat output.
     private val traceLogcatHooker = Hooker {
+
         if (pref.getBoolean(DEVELOPER_TRACE_LOGCAT, false)) {
             val functions = listOf("d", "e", "f", "i", "v", "w")
             functions.forEach { func ->
@@ -238,9 +265,14 @@ object Developer : HookerProvider {
                             val msg = param.args[1] as String?
                             val args = param.args[2] as Array<*>?
                             if (args == null) {
-                                 Log.d("Xposed","LOG.${func.uppercase()} => [$tag] $msg")
+                                Log.d(
+                                    "${TAG}-log", "LOG.${func.uppercase()} => [$tag] $msg"
+                                )
                             } else {
-                                 Log.d("Xposed","LOG.${func.uppercase()} => [$tag] ${msg?.format(*args)}")
+                                Log.d(
+                                    "${TAG}-log",
+                                    "LOG.${func.uppercase()} => [$tag] ${msg?.format(*args)}"
+                                )
                             }
                         }
                     })
@@ -255,7 +287,7 @@ object Developer : HookerProvider {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val path = (param.args[0] as File?)?.absolutePath ?: return
-                     Log.d("Xposed","FILE => Read $path")
+                    Log.d("Xposed", "FILE => Read $path")
                 }
             })
 
@@ -263,14 +295,14 @@ object Developer : HookerProvider {
                 @Throws(Throwable::class)
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val path = (param.args[0] as File?)?.absolutePath ?: return
-                     Log.d("Xposed","FILE => Write $path")
+                    Log.d("Xposed", "FILE => Write $path")
                 }
             })
 
             findAndHookMethod(C.File, "delete", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val file = param.thisObject as File
-                     Log.d("Xposed","FILE => Delete ${file.absolutePath}")
+                    Log.d("Xposed", "FILE => Delete ${file.absolutePath}")
                 }
             })
         }
@@ -284,7 +316,7 @@ object Developer : HookerProvider {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val xml = param.args[0] as String?
                     val root = param.args[1] as String?
-                     Log.d("Xposed","XML => root = $root, xml = $xml")
+                    Log.d("Xposed", "XML => root = $root, xml = $xml")
                 }
             })
         }

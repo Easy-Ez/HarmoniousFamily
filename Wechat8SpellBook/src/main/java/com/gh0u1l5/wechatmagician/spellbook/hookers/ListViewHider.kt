@@ -1,5 +1,6 @@
 package com.gh0u1l5.wechatmagician.spellbook.hookers
 
+import android.util.Log
 import android.widget.BaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
@@ -11,6 +12,7 @@ import com.gh0u1l5.wechatmagician.spellbook.data.Section
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Classes.MMBaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Methods.MMBaseAdapter_getItemInternal
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.MMSearchContactAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
@@ -55,8 +57,53 @@ object ListViewHider : HookerProvider {
     }
 
     override fun provideStaticHookers(): List<Hooker> {
-        return listOf(MMBaseAdapterHooker)
+        return listOf(MMSelectContactAdapterHooker, MMBaseAdapterHooker, BaseAdapterHooker)
     }
+
+    private val MMSelectContactAdapterHooker = Hooker {
+        // Hook getItem() of base adapters
+        findAndHookMethod(
+            MMSearchContactAdapter,
+            "vD",
+            C.Int,
+            object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    val adapter = param.thisObject as BaseAdapter
+                    val index = param.args[0] as Int
+                    Log.d("yaocai-adapter", "MMSelectContactAdapter getItem, index:${index}")
+                    val record = records[adapter] ?: return
+                    synchronized(record) {
+                        record.sections.forEach { section ->
+                            if (index in section) {
+                                param.args[0] = section.base + (index - section.start)
+                                return
+                            }
+                        }
+                    }
+                }
+            })
+
+        // Hook getCount() of base adapters
+        findAndHookMethod(MMSearchContactAdapter, "getCount", object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val adapter = param.thisObject as BaseAdapter
+                Log.d("yaocai-adapter", "RecentConversationAdapter ${param.thisObject} getCount")
+                val record = records[adapter] ?: return
+                synchronized(record) {
+                    if (record.sections.isNotEmpty()) {
+                        Log.d(
+                            "yaocai-adapter",
+                            "RecentConversationAdapter getCount:${record.sections.sumOf { it.size() }}"
+                        )
+                        param.result = record.sections.sumOf { it.size() }
+                    }
+                }
+            }
+        })
+
+
+    }
+
 
     private val MMBaseAdapterHooker = Hooker {
         // Hook getItem() of base adapters
@@ -93,9 +140,14 @@ object ListViewHider : HookerProvider {
             }
         })
 
+        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_BASE_ADAPTER)
+    }
+
+    private val BaseAdapterHooker = Hooker {
         // Hook notifyDataSetChanged() of base adapters
         findAndHookMethod(C.BaseAdapter, "notifyDataSetChanged", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
+                Log.d("yaocai-adapter", "notifyDataSetChanged:${param.thisObject}")
                 when (param.thisObject::class.java) {
                     AddressAdapter -> {
                         updateAdapterSections(param)
@@ -103,10 +155,12 @@ object ListViewHider : HookerProvider {
                     ConversationWithCacheAdapter -> {
                         updateAdapterSections(param)
                     }
+                    MMSearchContactAdapter -> {
+                        Log.d("yaocai-adapter", "RecentConversationAdapter notifyDataSetChanged")
+                        updateAdapterSections(param)
+                    }
                 }
             }
         })
-
-        WechatStatus.toggle(WechatStatus.StatusFlag.STATUS_FLAG_BASE_ADAPTER)
     }
 }

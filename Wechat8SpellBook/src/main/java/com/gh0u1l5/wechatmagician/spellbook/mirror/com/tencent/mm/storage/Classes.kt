@@ -7,6 +7,7 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLazy
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxLoader
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
 import com.gh0u1l5.wechatmagician.spellbook.base.Versions
+import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassesFromPackage
 
 object Classes {
@@ -25,6 +26,14 @@ object Classes {
             .filterByMethod(C.String, "getCityCode")
             .filterByMethod(C.String, "getCountryCode")
             .firstOrNull()
+    }
+
+
+    val MStorageEx: Class<*> by wxLazy("MStorageEx", Versions.v8_0_11) {
+        ReflectionUtil.findClassIfExists(
+            "$wxPackageName.sdk.storage.MStorageEx",
+            wxLoader!!
+        )
     }
 
     /**

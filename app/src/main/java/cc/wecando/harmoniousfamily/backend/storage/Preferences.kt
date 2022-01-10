@@ -2,6 +2,7 @@ package cc.wecando.harmoniousfamily.backend.storage
 
 import android.content.*
 import android.net.Uri
+import android.util.Log
 import cc.wecando.harmoniousfamily.Global.ACTION_UPDATE_PREF
 import cc.wecando.harmoniousfamily.Global.FOLDER_SHARED_PREFS
 import cc.wecando.harmoniousfamily.Global.MAGICIAN_BASE_DIR
@@ -48,6 +49,9 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
                             else -> null
                         }
                     }
+                }
+                for ((key, value) in content) {
+                    Log.d("yaocai", "key:${key},value:${value}")
                 }
             } catch (_: SecurityException) {
                 // Failed to use the ContentProvider pattern, fallback to XSharedPreferences.

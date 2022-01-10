@@ -10,6 +10,7 @@ import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IAdapterHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.MMSearchContactAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.AddressUI_createMvvmRecyclerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.WxRecyclerAdapter
@@ -26,6 +27,8 @@ object Adapters : EventCenter() {
     override fun provideEventHooker(event: String) = when (event) {
         "onAddressAdapterCreated" ->
             onAddressAdapterCreateHooker
+        "onRecentConversationAdapterCreated" ->
+            onRecentConversationAdapterCreatedHooker
         "onConversationAdapterCreated" ->
             onConversationWithCacheAdapterCreateHooker
         "onHeaderViewListAdapterGettingView", "onHeaderViewListAdapterGotView" ->
@@ -84,6 +87,24 @@ object Adapters : EventCenter() {
                 }
                 notify("onConversationAdapterCreated") { plugin ->
                     (plugin as IAdapterHook).onConversationAdapterCreated(adapter)
+                }
+            }
+        })
+    }
+
+    private val onRecentConversationAdapterCreatedHooker = Hooker {
+        hookAllConstructors(MMSearchContactAdapter, object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val adapter = param.thisObject as? BaseAdapter
+                if (adapter == null) {
+                    Log.d(
+                        "Xposed",
+                        "Expect conversation adapter to be BaseAdapter, get ${param.thisObject::class.java}"
+                    )
+                    return
+                }
+                notify("onRecentConversationAdapterCreated") { plugin ->
+                    (plugin as IAdapterHook).onRecentConversationAdapterCreated(adapter)
                 }
             }
         })

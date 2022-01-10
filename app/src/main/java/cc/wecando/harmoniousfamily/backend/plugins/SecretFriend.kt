@@ -21,6 +21,7 @@ import cc.wecando.harmoniousfamily.utils.PasswordUtil
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.AddressAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.ConversationAdapterObjectNew
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.RecentConversationAdapterObject
 import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.hookers.ListViewHider
 import com.gh0u1l5.wechatmagician.spellbook.hookers.MenuAppender
@@ -32,6 +33,7 @@ import de.robv.android.xposed.XposedHelpers.getObjectField
 
 object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenuHook,
     ISearchBarConsole {
+    private const val TAG = "SecretFriend"
 
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
 
@@ -59,10 +61,38 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
     }
 
+    private fun testForRecent(adapter: BaseAdapter) {
+        Log.d("yaocai-adapter", "onMMSearchContactAdapterCreated:${adapter}")
+        ListViewHider.register(adapter, "Secret Friend") { item ->
+            item?.let {
+                Log.d(
+                    "yaocai-adapter",
+                    "item:${item};----start-----loop"
+                )
+                for (field in item::class.java.fields) {
+                    Log.d(
+                        "yaocai-adapter",
+                        "item:${item};key:${field.name};value:${field.get(item)}"
+                    )
+                }
+                Log.d(
+                    "yaocai-adapter",
+                    "item:${item};----end-----loop"
+                )
+            }
+            val username = getObjectField(item, "field_username")
+            false
+        }
+    }
+
     override fun onAddressAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
 
 
     override fun onConversationAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
+
+
+    override fun onRecentConversationAdapterCreated(adapter: BaseAdapter) =
+        testForRecent(adapter)
 
     /**
      * Hide the chatting windows for secret friends.
@@ -72,12 +102,12 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         if (!isPluginEnabled()) {
             return
         }
-        Log.d("Xposed-secret", "${activity::class.java}")
+        Log.d(TAG, "${activity::class.java}")
         if (activity::class.java == ChattingUI) {
             val extras = activity.intent.extras
             extras?.let {
                 for (key in it.keySet()) {
-                    Log.d("Xposed-secret", "key:${key};value:${it.get(key)}")
+                    Log.d(TAG, "key:${key};value:${it.get(key)}")
                 }
             }
 
@@ -194,9 +224,8 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
         AddressAdapterObject.get()?.notifyDataSetChanged()
         ConversationAdapterObject.get()?.notifyDataSetChanged()
-        val addressAdapter = ConversationAdapterObjectNew.get()
-        Log.d("InnerAdapter", "addressAdapter:${addressAdapter}")
-        addressAdapter?.notifyDataSetChanged()
+        RecentConversationAdapterObject.get()?.notifyDataSetChanged()
+        ConversationAdapterObjectNew.get()?.notifyDataSetChanged()
     }
 
     /**

@@ -104,6 +104,9 @@ object WechatGlobal {
     @Volatile
     var ConversationAdapterObject: SoftReference<BaseAdapter?> = SoftReference(null)
 
+    @Volatile
+    var RecentConversationAdapterObject: SoftReference<BaseAdapter?> = SoftReference(null)
+
     /**
      * 新版本微信通讯录使用 RecyclerView 实现
      */
