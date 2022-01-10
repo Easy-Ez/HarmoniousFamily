@@ -62,37 +62,50 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
     }
 
     private fun testForRecent(adapter: BaseAdapter) {
-        Log.d("yaocai-adapter", "onMMSearchContactAdapterCreated:${adapter}")
         ListViewHider.register(adapter, "Secret Friend") { item ->
             item?.let {
-                Log.d(
-                    "yaocai-adapter",
-                    "item:${item};----start-----loop"
-                )
-                for (field in item::class.java.fields) {
+//                Log.d(
+//                    "yaocai-adapter",
+//                    "item:${item};----start-----loop"
+//                )
+//                for (field in item::class.java.fields) {
+//                    Log.d(
+//                        "yaocai-adapter",
+//                        "item:${item};key:${field.name};value:${field.get(item)}"
+//                    )
+//                }
+//                Log.d(
+//                    "yaocai-adapter",
+//                    "item:${item};----end-----loop"
+//                )
+                try {
                     Log.d(
                         "yaocai-adapter",
-                        "item:${item};key:${field.name};value:${field.get(item)}"
+                        "item-username:${getObjectField(item, "username")};nickName:${
+                            getObjectField(
+                                item,
+                                "nOJ"
+                            )
+                        }"
                     )
+                } catch (e: Throwable) {
+
                 }
-                Log.d(
-                    "yaocai-adapter",
-                    "item:${item};----end-----loop"
-                )
+
             }
-            val username = getObjectField(item, "field_username")
+
             false
         }
     }
 
     override fun onAddressAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
 
-
     override fun onConversationAdapterCreated(adapter: BaseAdapter) = onAdapterCreated(adapter)
 
+    override fun onMMSearchContactAdapterCreated(adapter: BaseAdapter) = testForRecent(adapter)
 
-    override fun onRecentConversationAdapterCreated(adapter: BaseAdapter) =
-        testForRecent(adapter)
+    override fun onRecentConversationAdapterCreated(adapter: BaseAdapter) = testForRecent(adapter)
+
 
     /**
      * Hide the chatting windows for secret friends.

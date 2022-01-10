@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.BaseAdapter
 import com.gh0u1l5.wechatmagician.spellbook.C
 import com.gh0u1l5.wechatmagician.spellbook.Predicate
+import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
 import com.gh0u1l5.wechatmagician.spellbook.base.Hooker
 import com.gh0u1l5.wechatmagician.spellbook.base.HookerProvider
@@ -13,9 +14,11 @@ import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Classes.MMB
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.Methods.MMBaseAdapter_getItemInternal
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.MMSearchContactAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.RecentConversationAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
+import de.robv.android.xposed.XposedHelpers.findClassIfExists
 import java.util.concurrent.ConcurrentHashMap
 
 object ListViewHider : HookerProvider {
@@ -57,9 +60,53 @@ object ListViewHider : HookerProvider {
     }
 
     override fun provideStaticHookers(): List<Hooker> {
-        return listOf(MMSelectContactAdapterHooker, MMBaseAdapterHooker, BaseAdapterHooker)
+        return listOf(
+            RecentConversationAdapterHooker,
+            MMSelectContactAdapterHooker,
+            MMBaseAdapterHooker,
+            BaseAdapterHooker
+        )
     }
 
+    private val RecentConversationAdapterHooker = Hooker {
+        // Hook getItem() of base adapters
+        findAndHookMethod(
+            RecentConversationAdapter,
+            "vD",
+            C.Int,
+            object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    val adapter = param.thisObject as BaseAdapter
+                    val index = param.args[0] as Int
+                    Log.d("yaocai-adapter", "getItem, index:${index}")
+                    val record = records[adapter] ?: return
+                    synchronized(record) {
+                        record.sections.forEach { section ->
+                            if (index in section) {
+                                param.args[0] = section.base + (index - section.start)
+                                return
+                            }
+                        }
+                    }
+                }
+            })
+        // Hook getCount() of base adapters
+        findAndHookMethod(RecentConversationAdapter, "getCount", object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val adapter = param.thisObject as BaseAdapter
+                val record = records[adapter] ?: return
+                synchronized(record) {
+                    if (record.sections.isNotEmpty()) {
+                        Log.d(
+                            "yaocai-adapter",
+                            "getCount:${record.sections.sumOf { it.size() }}"
+                        )
+                        param.result = record.sections.sumOf { it.size() }
+                    }
+                }
+            }
+        })
+    }
     private val MMSelectContactAdapterHooker = Hooker {
         // Hook getItem() of base adapters
         findAndHookMethod(
@@ -70,7 +117,7 @@ object ListViewHider : HookerProvider {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val adapter = param.thisObject as BaseAdapter
                     val index = param.args[0] as Int
-                    Log.d("yaocai-adapter", "MMSelectContactAdapter getItem, index:${index}")
+                    Log.d("yaocai-adapter", "getItem, index:${index}")
                     val record = records[adapter] ?: return
                     synchronized(record) {
                         record.sections.forEach { section ->
@@ -87,13 +134,12 @@ object ListViewHider : HookerProvider {
         findAndHookMethod(MMSearchContactAdapter, "getCount", object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as BaseAdapter
-                Log.d("yaocai-adapter", "RecentConversationAdapter ${param.thisObject} getCount")
                 val record = records[adapter] ?: return
                 synchronized(record) {
                     if (record.sections.isNotEmpty()) {
                         Log.d(
                             "yaocai-adapter",
-                            "RecentConversationAdapter getCount:${record.sections.sumOf { it.size() }}"
+                            "getCount:${record.sections.sumOf { it.size() }}"
                         )
                         param.result = record.sections.sumOf { it.size() }
                     }
@@ -103,7 +149,6 @@ object ListViewHider : HookerProvider {
 
 
     }
-
 
     private val MMBaseAdapterHooker = Hooker {
         // Hook getItem() of base adapters
@@ -156,11 +201,29 @@ object ListViewHider : HookerProvider {
                         updateAdapterSections(param)
                     }
                     MMSearchContactAdapter -> {
-                        Log.d("yaocai-adapter", "RecentConversationAdapter notifyDataSetChanged")
                         updateAdapterSections(param)
                     }
                 }
             }
         })
+
+        //todo error
+        findAndHookMethod(
+            findClassIfExists("android.widget.ListView", WechatGlobal.wxLoader!!),
+            "setAdapter",
+            object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    val adapter = param.args[0]
+                    Log.d(
+                        "yaocai-adapter",
+                        "setAdapter:${adapter},isRecentAdapter:${adapter::class.java == RecentConversationAdapter}"
+                    )
+                    when (adapter::class.java) {
+                        RecentConversationAdapter -> {
+                            updateAdapterSections(param)
+                        }
+                    }
+                }
+            })
     }
 }

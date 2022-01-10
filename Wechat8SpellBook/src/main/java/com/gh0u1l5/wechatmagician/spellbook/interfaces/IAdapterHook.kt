@@ -34,6 +34,8 @@ interface IAdapterHook {
 
     fun onRecentConversationAdapterCreated(adapter: BaseAdapter) {}
 
+    fun onMMSearchContactAdapterCreated(adapter: BaseAdapter) {}
+
     /**
      * Called when an HeaderViewListAdapter object is going to invoke [Adapter.getView] method.
      *

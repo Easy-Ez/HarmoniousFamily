@@ -11,6 +11,7 @@ import com.gh0u1l5.wechatmagician.spellbook.data.InnerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.interfaces.IAdapterHook
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.AddressAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.MMSearchContactAdapter
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Classes.RecentConversationAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.contact.Methods.AddressUI_createMvvmRecyclerAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.conversation.Classes.ConversationWithCacheAdapter
 import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.view.recyclerview.Classes.WxRecyclerAdapter
@@ -18,6 +19,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookMethod
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
+import de.robv.android.xposed.XposedHelpers.findMethodExact
 
 object Adapters : EventCenter() {
 
@@ -27,6 +29,8 @@ object Adapters : EventCenter() {
     override fun provideEventHooker(event: String) = when (event) {
         "onAddressAdapterCreated" ->
             onAddressAdapterCreateHooker
+        "onMMSearchContactAdapterCreated" ->
+            onMMSearchContactAdapterCreatedHooker
         "onRecentConversationAdapterCreated" ->
             onRecentConversationAdapterCreatedHooker
         "onConversationAdapterCreated" ->
@@ -92,8 +96,26 @@ object Adapters : EventCenter() {
         })
     }
 
-    private val onRecentConversationAdapterCreatedHooker = Hooker {
+    private val onMMSearchContactAdapterCreatedHooker = Hooker {
         hookAllConstructors(MMSearchContactAdapter, object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val adapter = param.thisObject as? BaseAdapter
+                if (adapter == null) {
+                    Log.d(
+                        "Xposed",
+                        "Expect conversation adapter to be BaseAdapter, get ${param.thisObject::class.java}"
+                    )
+                    return
+                }
+                notify("onMMSearchContactAdapterCreatedHooker") { plugin ->
+                    (plugin as IAdapterHook).onMMSearchContactAdapterCreated(adapter)
+                }
+            }
+        })
+    }
+
+    private val onRecentConversationAdapterCreatedHooker = Hooker {
+        hookAllConstructors(RecentConversationAdapter, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 val adapter = param.thisObject as? BaseAdapter
                 if (adapter == null) {
