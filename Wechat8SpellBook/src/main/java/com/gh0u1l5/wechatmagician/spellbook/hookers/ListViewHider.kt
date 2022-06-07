@@ -159,12 +159,17 @@ object ListViewHider : HookerProvider {
             object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     val adapter = param.thisObject as BaseAdapter
-                    val index = param.args[0] as Int
+                    val originIndex = param.args[0] as Int
                     val record = records[adapter] ?: return
                     synchronized(record) {
                         record.sections.forEach { section ->
-                            if (index in section) {
-                                param.args[0] = section.base + (index - section.start)
+                            if (originIndex in section) {
+                                val newIndex = section.base + (originIndex - section.start)
+                                Log.d(
+                                    "yaocai-adapter",
+                                    "getItem originIndex:${originIndex};newIndex:${newIndex}"
+                                )
+                                param.args[0] = newIndex
                                 return
                             }
                         }
@@ -179,7 +184,12 @@ object ListViewHider : HookerProvider {
                 val record = records[adapter] ?: return
                 synchronized(record) {
                     if (record.sections.isNotEmpty()) {
-                        param.result = record.sections.sumOf { it.size() }
+                        val newCount = record.sections.sumOf { it.size() }
+                        Log.d(
+                            "yaocai-adapter",
+                            "getItem newCount:${newCount}"
+                        )
+                        param.result = newCount
                     }
                 }
             }
@@ -193,6 +203,10 @@ object ListViewHider : HookerProvider {
         findAndHookMethod(C.BaseAdapter, "notifyDataSetChanged", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 Log.d("yaocai-adapter", "notifyDataSetChanged:${param.thisObject}")
+                Log.d(
+                    "yaocai-adapter",
+                    "notifyDataSetChanged isSame:${param.thisObject::class.java == ConversationWithCacheAdapter}"
+                )
                 when (param.thisObject::class.java) {
                     AddressAdapter -> {
                         updateAdapterSections(param)
