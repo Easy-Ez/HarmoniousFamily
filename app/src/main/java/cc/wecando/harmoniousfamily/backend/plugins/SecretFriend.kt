@@ -57,6 +57,10 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
         }
         ListViewHider.register(adapter, "Secret Friend") { item ->
             val username = getObjectField(item, "field_username")
+            Log.d(
+                "yaocai-adapter",
+                "predicate username:${username}"
+            )
             username in SecretFriendList
         }
     }
@@ -163,7 +167,7 @@ object SecretFriend : IActivityHook, IAdapterHook, INotificationHook, IPopupMenu
     }
 
     override fun onPopupMenuForConversationsCreating(username: String): List<MenuAppender.PopupMenuItem>? {
-        return super.onPopupMenuForConversationsCreating(username)
+        return onPopupMenuForContactsCreating(username)
     }
 
     // Handle SearchBar commands to operate on secret friends.
