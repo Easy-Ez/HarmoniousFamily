@@ -66,7 +66,6 @@ object Classes {
 
     val MMSearchContactAdapter: Class<*> by wxLazy("MMSearchContactAdapter", v8_0_11) {
         findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact")
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.ui.contact")
             .filterByMethod(null, "clearData")
             .filterByMethod(null, "clearTask")
             .isOnlyOneOrContinue {

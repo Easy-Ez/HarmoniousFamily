@@ -10,7 +10,7 @@ object Methods {
         MMBaseAdapter.declaredMethods.filter {
             it.parameterTypes.size == 1 && it.parameterTypes[0] == C.Int
         }.firstOrNull {
-            it.name != "getItem" && it.name != "getItemId"
+            it.name != "getItem" && it.name != "getItemId" && it.returnType != C.Int
         }?.name
     }
 }
