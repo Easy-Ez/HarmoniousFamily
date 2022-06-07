@@ -13,9 +13,11 @@ import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import de.robv.android.xposed.XSharedPreferences
 import java.io.File
+import java.lang.Exception
 import java.util.concurrent.ConcurrentHashMap
 
 class Preferences(private val preferencesName: String) : SharedPreferences {
+    private val tag = "yaocai-sp-${preferencesName}"
 
     // loadChannel resumes all the threads waiting for the preference loading.
     private val loadChannel = WaitChannel()
@@ -51,9 +53,9 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
                     }
                 }
                 for ((key, value) in content) {
-                    Log.d("yaocai", "key:${key},value:${value}")
+                    Log.d(tag, "content-key:${key},value:${value}")
                 }
-            } catch (_: SecurityException) {
+            } catch (_: Exception) {
                 // Failed to use the ContentProvider pattern, fallback to XSharedPreferences.
                 if (loadChannel.isDone() && legacy != null) {
                     legacy?.reload()
@@ -61,6 +63,12 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
                 }
                 val preferencesDir = "$MAGICIAN_BASE_DIR/$FOLDER_SHARED_PREFS/"
                 legacy = XSharedPreferences(File(preferencesDir, "$preferencesName.xml"))
+                legacy?.all?.let {
+                    for ((key, value) in it) {
+                        Log.d(tag, "legacy-key:${key},value:${value}")
+                    }
+                }
+
             } finally {
                 loadChannel.done()
                 cacheStringList()
@@ -107,11 +115,22 @@ class Preferences(private val preferencesName: String) : SharedPreferences {
     override fun contains(key: String): Boolean =
         content.contains(key) || legacy?.contains(key) == true
 
-    override fun getAll(): MutableMap<String, *>? = if (legacy != null) legacy!!.all else content
+    override fun getAll(): MutableMap<String, *>? {
+        return if (legacy != null) {
+            Log.d(tag, "from legacy")
+            legacy!!.all
+        } else {
+            Log.d(tag, "from content")
+            content
+        }
+    }
 
     private fun getValue(key: String?): Any? {
         loadChannel.wait(100)
-        return all?.get(key)
+        val all = all
+        val ret = all?.get(key)
+        Log.d(tag, "getValue-key:${key};value:${ret}")
+        return ret
     }
 
     private inline fun <reified T> getValue(key: String?, defValue: T) =
