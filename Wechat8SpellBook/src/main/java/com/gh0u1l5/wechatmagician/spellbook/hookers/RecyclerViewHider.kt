@@ -79,11 +79,11 @@ object RecyclerViewHider : HookerProvider {
                                 it(item)
                             } ?: false
 
-                        itemView.visibility = if (gone) View.GONE else  View.VISIBLE
+                        itemView.visibility = if (gone) View.GONE else View.VISIBLE
                         val params = itemView.layoutParams as ViewGroup.LayoutParams
                         if (gone) {
-                            params.height = 0
-                            params.width = 0
+                            params.height = 1
+                            params.width = ViewGroup.LayoutParams.MATCH_PARENT
                         } else {
                             params.height =
                                 ViewGroup.LayoutParams.WRAP_CONTENT // 根据具体需求场景设置
