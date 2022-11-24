@@ -74,7 +74,7 @@ class MirrorUnitTest {
             objects.forEach { instance ->
                 MirrorUtil.clearUnitTestLazyFields(instance)
             }
-
+            Log.d("MirrorUnitTest", "version: ${WechatGlobal.wxVersion}.")
             // 进行适配测试并生成结果
             var result: List<Pair<String, String>>?
             val timeSearch = measureTimeMillis {
@@ -89,6 +89,10 @@ class MirrorUnitTest {
         apkFile.delete()
     }
 
+    @Test
+    fun verifyDomesticPackage8_0_30() {
+        verifyPackage("$DOMESTIC_DIR/wechat-v8.0.30.apk")
+    }
     @Test
     fun verifyDomesticPackage8_0_23() {
         verifyPackage("$DOMESTIC_DIR/wechat-v8.0.23.apk")

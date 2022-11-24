@@ -9,12 +9,11 @@ import java.lang.reflect.Field
 
 object Fields {
     val Adapter_Observable: Field by WechatGlobal.wxLazy("Adapter_Observable", Versions.v8_0_11) {
-        ReflectionUtil
-            .findDeclaredFieldsWithType(
-                WxRecyclerAdapter.superclass.superclass,
-                AdapterDataObservable
-            )
-            .firstOrNull()
-            ?.apply { isAccessible = true }
+        val clazz =
+            if (WechatGlobal.wxVersion!! >= Versions.v8_0_30) WxRecyclerAdapter.superclass.superclass.superclass
+            else WxRecyclerAdapter.superclass.superclass
+        ReflectionUtil.findDeclaredFieldsWithType(
+                clazz, AdapterDataObservable
+            ).firstOrNull()?.apply { isAccessible = true }
     }
 }

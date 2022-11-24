@@ -70,82 +70,82 @@ object ListViewHider : HookerProvider {
 
     private val RecentConversationAdapterHooker = Hooker {
         // Hook getItem() of base adapters
-        findAndHookMethod(
-            RecentConversationAdapter,
-            "vD",
-            C.Int,
-            object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    val adapter = param.thisObject as BaseAdapter
-                    val index = param.args[0] as Int
-                    Log.d("yaocai-adapter", "getItem, index:${index}")
-                    val record = records[adapter] ?: return
-                    synchronized(record) {
-                        record.sections.forEach { section ->
-                            if (index in section) {
-                                param.args[0] = section.base + (index - section.start)
-                                return
-                            }
-                        }
-                    }
-                }
-            })
-        // Hook getCount() of base adapters
-        findAndHookMethod(RecentConversationAdapter, "getCount", object : XC_MethodHook() {
-            override fun afterHookedMethod(param: MethodHookParam) {
-                val adapter = param.thisObject as BaseAdapter
-                val record = records[adapter] ?: return
-                synchronized(record) {
-                    if (record.sections.isNotEmpty()) {
-                        Log.d(
-                            "yaocai-adapter",
-                            "getCount:${record.sections.sumOf { it.size() }}"
-                        )
-                        param.result = record.sections.sumOf { it.size() }
-                    }
-                }
-            }
-        })
+//        findAndHookMethod(
+//            RecentConversationAdapter,
+//            "vD",
+//            C.Int,
+//            object : XC_MethodHook() {
+//                override fun beforeHookedMethod(param: MethodHookParam) {
+//                    val adapter = param.thisObject as BaseAdapter
+//                    val index = param.args[0] as Int
+//                    Log.d("yaocai-adapter", "getItem, index:${index}")
+//                    val record = records[adapter] ?: return
+//                    synchronized(record) {
+//                        record.sections.forEach { section ->
+//                            if (index in section) {
+//                                param.args[0] = section.base + (index - section.start)
+//                                return
+//                            }
+//                        }
+//                    }
+//                }
+//            })
+//        // Hook getCount() of base adapters
+//        findAndHookMethod(RecentConversationAdapter, "getCount", object : XC_MethodHook() {
+//            override fun afterHookedMethod(param: MethodHookParam) {
+//                val adapter = param.thisObject as BaseAdapter
+//                val record = records[adapter] ?: return
+//                synchronized(record) {
+//                    if (record.sections.isNotEmpty()) {
+//                        Log.d(
+//                            "yaocai-adapter",
+//                            "getCount:${record.sections.sumOf { it.size() }}"
+//                        )
+//                        param.result = record.sections.sumOf { it.size() }
+//                    }
+//                }
+//            }
+//        })
     }
     private val MMSelectContactAdapterHooker = Hooker {
         // Hook getItem() of base adapters
-        findAndHookMethod(
-            MMSearchContactAdapter,
-            "vD",
-            C.Int,
-            object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    val adapter = param.thisObject as BaseAdapter
-                    val index = param.args[0] as Int
-                    Log.d("yaocai-adapter", "getItem, index:${index}")
-                    val record = records[adapter] ?: return
-                    synchronized(record) {
-                        record.sections.forEach { section ->
-                            if (index in section) {
-                                param.args[0] = section.base + (index - section.start)
-                                return
-                            }
-                        }
-                    }
-                }
-            })
-
-        // Hook getCount() of base adapters
-        findAndHookMethod(MMSearchContactAdapter, "getCount", object : XC_MethodHook() {
-            override fun afterHookedMethod(param: MethodHookParam) {
-                val adapter = param.thisObject as BaseAdapter
-                val record = records[adapter] ?: return
-                synchronized(record) {
-                    if (record.sections.isNotEmpty()) {
-                        Log.d(
-                            "yaocai-adapter",
-                            "getCount:${record.sections.sumOf { it.size() }}"
-                        )
-                        param.result = record.sections.sumOf { it.size() }
-                    }
-                }
-            }
-        })
+//        findAndHookMethod(
+//            MMSearchContactAdapter,
+//            "vD",
+//            C.Int,
+//            object : XC_MethodHook() {
+//                override fun beforeHookedMethod(param: MethodHookParam) {
+//                    val adapter = param.thisObject as BaseAdapter
+//                    val index = param.args[0] as Int
+//                    Log.d("yaocai-adapter", "getItem, index:${index}")
+//                    val record = records[adapter] ?: return
+//                    synchronized(record) {
+//                        record.sections.forEach { section ->
+//                            if (index in section) {
+//                                param.args[0] = section.base + (index - section.start)
+//                                return
+//                            }
+//                        }
+//                    }
+//                }
+//            })
+//
+//        // Hook getCount() of base adapters
+//        findAndHookMethod(MMSearchContactAdapter, "getCount", object : XC_MethodHook() {
+//            override fun afterHookedMethod(param: MethodHookParam) {
+//                val adapter = param.thisObject as BaseAdapter
+//                val record = records[adapter] ?: return
+//                synchronized(record) {
+//                    if (record.sections.isNotEmpty()) {
+//                        Log.d(
+//                            "yaocai-adapter",
+//                            "getCount:${record.sections.sumOf { it.size() }}"
+//                        )
+//                        param.result = record.sections.sumOf { it.size() }
+//                    }
+//                }
+//            }
+//        })
 
 
     }
@@ -222,22 +222,22 @@ object ListViewHider : HookerProvider {
         })
 
         //todo error
-        findAndHookMethod(
-            findClassIfExists("android.widget.ListView", WechatGlobal.wxLoader!!),
-            "setAdapter",
-            object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    val adapter = param.args[0]
-                    Log.d(
-                        "yaocai-adapter",
-                        "setAdapter:${adapter},isRecentAdapter:${adapter::class.java == RecentConversationAdapter}"
-                    )
-                    when (adapter::class.java) {
-                        RecentConversationAdapter -> {
-                            updateAdapterSections(param)
-                        }
-                    }
-                }
-            })
+//        findAndHookMethod(
+//            findClassIfExists("android.widget.ListView", WechatGlobal.wxLoader!!),
+//            "setAdapter",
+//            object : XC_MethodHook() {
+//                override fun beforeHookedMethod(param: MethodHookParam) {
+//                    val adapter = param.args[0]
+//                    Log.d(
+//                        "yaocai-adapter",
+//                        "setAdapter:${adapter},isRecentAdapter:${adapter::class.java == RecentConversationAdapter}"
+//                    )
+//                    when (adapter::class.java) {
+//                        RecentConversationAdapter -> {
+//                            updateAdapterSections(param)
+//                        }
+//                    }
+//                }
+//            })
     }
 }

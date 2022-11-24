@@ -25,11 +25,15 @@ class PasswordPreference : androidx.preference.EditTextPreference {
 
     override fun onClick() {
         val pref = preferenceManager.sharedPreferences
-        val encrypted = pref.getString(key, "")
-        if (encrypted.isNullOrEmpty()) {
-            PasswordUtil.createPassword(context, "Wechat Magician", pref, key)
-        } else {
-            PasswordUtil.changePassword(context, "Wechat Magician", pref, key)
+        if (pref != null) {
+            val encrypted = pref.getString(key, "")
+            if (encrypted.isNullOrEmpty()) {
+                PasswordUtil.createPassword(context, "Wechat Magician", pref, key)
+            } else {
+                PasswordUtil.changePassword(context, "Wechat Magician", pref, key)
+            }
+
         }
+
     }
 }

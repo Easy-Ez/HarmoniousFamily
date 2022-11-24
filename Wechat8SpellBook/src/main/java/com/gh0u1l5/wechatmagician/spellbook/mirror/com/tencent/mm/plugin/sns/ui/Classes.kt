@@ -19,17 +19,22 @@ object Classes {
     }
 
     val SnsUploadUI: Class<*> by wxLazy("SnsUploadUI") {
-        findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-            .filterByField("$wxPackageName.plugin.sns.ui.LocationWidget")
-            .filterByField("$wxPackageName.plugin.sns.ui.SnsUploadSayFooter")
-            .firstOrNull()
+        val classes = findClassesFromPackage(
+            wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui"
+        ).filterByField("$wxPackageName.plugin.sns.ui.LocationWidget")
+
+        val clazzName = if (WechatGlobal.wxVersion!! >= Versions.v8_0_30) {
+            "$wxPackageName.plugin.sns.ui.widget.AbsSnsUploadSayFooter"
+        } else {
+            "$wxPackageName.plugin.sns.ui.SnsUploadSayFooter"
+        }
+        classes.filterByField(clazzName).firstOrNull()
     }
 
     val SnsEditTextInterface: Class<*> by wxLazy("SnsEditTextInterface") {
         findClassIfExists(
-            "com.tencent.mm.ui.widget.MMEditText",
-            wxLoader!!
-        )?.interfaces?.firstOrNull()
+            "com.tencent.mm.ui.widget.MMEditText", wxLoader!!
+        )?.interfaces?.firstOrNull { `interface`-> `interface`.name.contains("com.tencent.mm") }
     }
 
     val SnsUserUI: Class<*> by wxLazy("SnsUserUI") {
@@ -40,14 +45,14 @@ object Classes {
     private fun getSnsActivityByRules(): Class<*>? {
         return when {
             WechatGlobal.wxVersion!! >= Versions.v8_0_9 -> {
-                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-                    .filterByField("$wxPackageName.ui.base.MMOverScrollView")
-                    .firstOrNull()
+                findClassesFromPackage(
+                    wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui"
+                ).filterByField("$wxPackageName.ui.base.MMOverScrollView").firstOrNull()
             }
             else -> {
-                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-                    .filterByField("$wxPackageName.ui.base.MMPullDownView")
-                    .firstOrNull()
+                findClassesFromPackage(
+                    wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui"
+                ).filterByField("$wxPackageName.ui.base.MMPullDownView").firstOrNull()
             }
         }
     }
@@ -55,14 +60,14 @@ object Classes {
     private fun getSnsTimeLineUIByRules(): Class<*>? {
         return when {
             WechatGlobal.wxVersion!! >= Versions.v8_0_6 -> {
-                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-                    .filterByField("androidx.appcompat.app.ActionBar")
-                    .firstOrNull()
+                findClassesFromPackage(
+                    wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui"
+                ).filterByField("androidx.appcompat.app.ActionBar").firstOrNull()
             }
             else -> {
-                findClassesFromPackage(wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui")
-                    .filterByField("android.support.v7.app.ActionBar")
-                    .firstOrNull()
+                findClassesFromPackage(
+                    wxLoader!!, wxClasses!!, "$wxPackageName.plugin.sns.ui"
+                ).filterByField("android.support.v7.app.ActionBar").firstOrNull()
             }
         }
     }

@@ -27,24 +27,27 @@ class PasswordSwitchPreference : SwitchPreference {
 
     override fun onClick() {
         val pref = preferenceManager.sharedPreferences
-        val encrypted = pref.getString("${key}_password", "")
+        if (pref != null) {
+            val encrypted = pref.getString("${key}_password", "")
 
-        val status = pref.getBoolean(key, false)
-        if (status) { // close
-            if (encrypted.isNullOrEmpty()) {
-                return super.onClick()
-            }
-            val message = context.getString(R.string.prompt_verify_password)
-            PasswordUtil.askPasswordWithVerify(context, "Wechat Magician", message, encrypted) {
-                super.onClick()
-            }
-        } else { // open
-            if (encrypted.isNullOrEmpty()) {
-                return super.onClick()
-            }
-            PasswordUtil.createPassword(context, "Wechat Magician", pref, "${key}_password") {
-                super.onClick()
+            val status = pref.getBoolean(key, false)
+            if (status) { // close
+                if (encrypted.isNullOrEmpty()) {
+                    return super.onClick()
+                }
+                val message = context.getString(R.string.prompt_verify_password)
+                PasswordUtil.askPasswordWithVerify(context, "Wechat Magician", message, encrypted) {
+                    super.onClick()
+                }
+            } else { // open
+                if (encrypted.isNullOrEmpty()) {
+                    return super.onClick()
+                }
+                PasswordUtil.createPassword(context, "Wechat Magician", pref, "${key}_password") {
+                    super.onClick()
+                }
             }
         }
+
     }
 }

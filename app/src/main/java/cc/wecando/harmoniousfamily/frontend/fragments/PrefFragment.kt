@@ -30,10 +30,7 @@ class PrefFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val gameKeyArray = arrayOf(
-        SETTINGS_GAME_RPS,
-        SETTINGS_GAME_DICE,
-        SETTINGS_GAME_RPS_FLAG,
-        SETTINGS_GAME_DICE_FLAG
+        SETTINGS_GAME_RPS, SETTINGS_GAME_DICE, SETTINGS_GAME_RPS_FLAG, SETTINGS_GAME_DICE_FLAG
     )
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -45,16 +42,14 @@ class PrefFragment : PreferenceFragmentCompat(),
         }
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)?.apply {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedInstanceState).apply {
             setBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.card_background))
         }
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,12 +57,12 @@ class PrefFragment : PreferenceFragmentCompat(),
     }
 
     override fun onStart() {
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
         super.onStart()
     }
 
     override fun onStop() {
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
         super.onStop()
     }
 
@@ -84,8 +79,7 @@ class PrefFragment : PreferenceFragmentCompat(),
                     val className = "$MAGICIAN_PACKAGE_NAME.frontend.MainActivityAlias"
                     val componentName = ComponentName(MAGICIAN_PACKAGE_NAME, className)
                     requireActivity().packageManager.setComponentEnabledSetting(
-                        componentName, newState,
-                        PackageManager.DONT_KILL_APP
+                        componentName, newState, PackageManager.DONT_KILL_APP
                     )
                 } catch (t: Throwable) {
                     Log.e(TAG, "Cannot hide icon: $t")
@@ -130,12 +124,11 @@ class PrefFragment : PreferenceFragmentCompat(),
         val dicePref = findPreference(SETTINGS_GAME_DICE) as Preference?
 
         rpsPref?.let {
-            it.title = if (sp.getBoolean(SETTINGS_GAME_RPS_FLAG, false)) {
+            it.title = if (sp?.getBoolean(SETTINGS_GAME_RPS_FLAG, false) == true) {
                 getString(
                     R.string.title_rps_list, GameUtils.getRPSTextByValue(
                         sp.getInt(
-                            SETTINGS_GAME_RPS,
-                            0
+                            SETTINGS_GAME_RPS, 0
                         ), requireContext()
                     )
                 )
@@ -146,12 +139,10 @@ class PrefFragment : PreferenceFragmentCompat(),
             }
         }
         dicePref?.let {
-            it.title = if (sp.getBoolean(SETTINGS_GAME_DICE_FLAG, false)) {
+            it.title = if (sp?.getBoolean(SETTINGS_GAME_DICE_FLAG, false) == true) {
                 getString(
-                    R.string.title_dice_list,
-                    sp.getInt(
-                        SETTINGS_GAME_DICE,
-                        0
+                    R.string.title_dice_list, sp.getInt(
+                        SETTINGS_GAME_DICE, 0
                     ) + 1
                 )
             } else {
