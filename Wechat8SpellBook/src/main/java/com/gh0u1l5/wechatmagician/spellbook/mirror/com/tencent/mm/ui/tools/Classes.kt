@@ -6,7 +6,13 @@ import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxPackageName
 import com.gh0u1l5.wechatmagician.spellbook.util.ReflectionUtil.findClassIfExists
 
 object Classes {
+    val ActionBarSearchView: Class<*> by wxLazy("ActionBarSearchView") {
+        findClassIfExists("$wxPackageName.ui.tools.ActionBarSearchView", wxLoader!!)
+    }
+
     val ActionBarEditText: Class<*> by wxLazy("ActionBarEditText") {
-        findClassIfExists("$wxPackageName.ui.tools.ActionBarSearchView\$ActionBarEditText", wxLoader!!)
+        findClassIfExists(
+            "$wxPackageName.ui.tools.ActionBarSearchView\$ActionBarEditText", wxLoader!!
+        )
     }
 }

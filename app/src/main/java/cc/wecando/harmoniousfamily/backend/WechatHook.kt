@@ -10,7 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Environment.MEDIA_MOUNTED
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import cc.wecando.harmoniousfamily.BuildConfig
@@ -28,9 +32,12 @@ import com.gh0u1l5.wechatmagician.spellbook.SpellBook.getApplicationApkPath
 import com.gh0u1l5.wechatmagician.spellbook.SpellBook.isImportantWechatProcess
 import com.gh0u1l5.wechatmagician.spellbook.WechatGlobal.wxVersion
 import com.gh0u1l5.wechatmagician.spellbook.WechatStatus
+import com.gh0u1l5.wechatmagician.spellbook.hookers.SearchBar
+import com.gh0u1l5.wechatmagician.spellbook.interfaces.ISearchBarConsole
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorClasses
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorFields
 import com.gh0u1l5.wechatmagician.spellbook.mirror.MirrorMethods
+import com.gh0u1l5.wechatmagician.spellbook.mirror.com.tencent.mm.ui.tools.Classes
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryAsynchronously
 import com.gh0u1l5.wechatmagician.spellbook.util.BasicUtil.tryVerbosely
 import com.gh0u1l5.wechatmagician.spellbook.util.FileUtil
@@ -41,6 +48,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
+import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.XposedHelpers.*
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.io.File
@@ -81,20 +89,14 @@ class WechatHook : IXposedHookLoadPackage {
                         "Wechat Version: $wxVersion",
                         "Module Version: ${BuildConfig.VERSION_NAME}"
                     ).joinToString("\n")
-                    val reportBody = listOf(
-                        "Classes:",
-                        generateReport(MirrorClasses).joinToString("\n") {
+                    val reportBody =
+                        listOf("Classes:", generateReport(MirrorClasses).joinToString("\n") {
                             "  ${it.first} -> ${it.second}"
-                        },
-                        "Methods:",
-                        generateReport(MirrorMethods).joinToString("\n") {
+                        }, "Methods:", generateReport(MirrorMethods).joinToString("\n") {
                             "  ${it.first} -> ${it.second}"
-                        },
-                        "Fields:",
-                        generateReport(MirrorFields).joinToString("\n") {
+                        }, "Fields:", generateReport(MirrorFields).joinToString("\n") {
                             "  ${it.first} -> ${it.second}"
-                        }
-                    ).joinToString("\n")
+                        }).joinToString("\n")
                     FileUtil.writeBytesToDisk(reportPath, "$reportHead\n$reportBody".toByteArray())
                 }
 
@@ -105,12 +107,13 @@ class WechatHook : IXposedHookLoadPackage {
 
     // hookAttachBaseContext is a stable way to get current application on all the platforms.
     private inline fun hookAttachBaseContext(
-        loader: ClassLoader,
-        crossinline callback: (Context) -> Unit
+        loader: ClassLoader, crossinline callback: (Context) -> Unit
     ) {
-        findAndHookMethod(
-            "android.content.ContextWrapper", loader, "attachBaseContext",
-            Context::class.java, object : XC_MethodHook() {
+        findAndHookMethod("android.content.ContextWrapper",
+            loader,
+            "attachBaseContext",
+            Context::class.java,
+            object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     callback(param.thisObject as? Application ?: return)
                 }
@@ -121,10 +124,9 @@ class WechatHook : IXposedHookLoadPackage {
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         tryVerbosely {
             when (lpparam.packageName) {
-                MAGICIAN_PACKAGE_NAME ->
-                    hookAttachBaseContext(lpparam.classLoader) {
-                        handleLoadMagician(lpparam.classLoader)
-                    }
+                MAGICIAN_PACKAGE_NAME -> hookAttachBaseContext(lpparam.classLoader) {
+                    handleLoadMagician(lpparam.classLoader)
+                }
                 else -> if (isImportantWechatProcess(lpparam)) {
                     Log.d(
                         "Xposed",
@@ -146,14 +148,16 @@ class WechatHook : IXposedHookLoadPackage {
 
     @Suppress("DEPRECATION")
     private fun handleLoadMagician(loader: ClassLoader) {
-        findAndHookMethod(
-            "$MAGICIAN_PACKAGE_NAME.frontend.fragments.EnvStatusFragment", loader,
-            "isModuleLoaded", object : XC_MethodReplacement() {
+        findAndHookMethod("$MAGICIAN_PACKAGE_NAME.frontend.fragments.EnvStatusFragment",
+            loader,
+            "isModuleLoaded",
+            object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(param: MethodHookParam): Any = true
             })
-        findAndHookMethod(
-            "$MAGICIAN_PACKAGE_NAME.frontend.fragments.EnvStatusFragment", loader,
-            "getXposedVersion", object : XC_MethodReplacement() {
+        findAndHookMethod("$MAGICIAN_PACKAGE_NAME.frontend.fragments.EnvStatusFragment",
+            loader,
+            "getXposedVersion",
+            object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(param: MethodHookParam): Any =
                     XposedBridge.getXposedVersion()
             })
@@ -164,12 +168,10 @@ class WechatHook : IXposedHookLoadPackage {
         // Register receivers for frontend communications
         tryVerbosely {
             context.registerReceiver(
-                requireHookStatusReceiver,
-                IntentFilter(ACTION_REQUIRE_HOOK_STATUS)
+                requireHookStatusReceiver, IntentFilter(ACTION_REQUIRE_HOOK_STATUS)
             )
             context.registerReceiver(
-                requireMagicianReportReceiver,
-                IntentFilter(ACTION_REQUIRE_REPORTS)
+                requireMagicianReportReceiver, IntentFilter(ACTION_REQUIRE_REPORTS)
             )
         }
 
